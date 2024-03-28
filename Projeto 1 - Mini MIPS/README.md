@@ -4,7 +4,7 @@
 <p> Registradores serão representados como matrizes </p>
 
 <h2> Funções a serem implementadas </h2>
-<img src="/Arquivos/Functions.png" alt="ERA PRA TA AQUI AS FUNCS">Funções</img>
+<img src="./Arquivos/Functions.png" alt="ERA PRA TA AQUI AS FUNCS">Funções</img>
 <ul>
 <li> Controle </li>
 <li> Memória de Instruções </li>
