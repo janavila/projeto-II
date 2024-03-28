@@ -1,0 +1,58 @@
+INSTRUCOES:
+------------
+0000 -> ADD -> 0
+0001 -> SUB -> 1
+0010 -> AADi-> 2
+0011 -> AND -> 3
+0100 -> LW  -> 4
+0101 -> OR  -> 5
+0110 -> SW  -> 6
+0111 -> Zero-> 7
+============
+
+# carrega o valor 5 para o registrador $2
+0010  000 010 000101 => 2085
+addi  $0  $2  5
+inst  f1  f2  dest
+
+# carrega o valor 3 para o registrador $1
+0010  000 001 000011 => 2043
+addi  $0  $1  3
+inst  f1  f2  dest
+
+0000 010 001 011 000 => 458
+add   $2  $1  $3
+inst  f1  f2  dest
+
+# carrega o valor 10 para o registrador $4
+0010  000 100 001010 => 210A
+addi  $0  $4  10
+inst  f1  f2  dest
+
+#grava o conteúdo do registrador $2 na posição 0 da memória
+0110 000 010 000000 => 6080
+sw   $0  $2  0
+inst f1 dest desloc.
+
+#grava o conteúdo do registrador $2 na posição 0 da memória
+0110 000 100 000100 => 6104
+sw   $0  $4  4
+inst f1 dest desloc.
+
+
+#faz o load na posição 4 da memória para o registrador $1
+0100 000 001  000100 => 4044
+lw   $0  $1   4
+inst f1 dest desloc.
+
+
+
+addi $0 $2 5 	=> $2 = 0+5        	=> 2085
+addi S0 S1 3 	=> $1 = 0+3			=> 2043
+add  $2 $1 $3	=> $3 = $2+$1		=> 0458
+addi $0 $4 10 	=> $4 = 0+10		=> 210a
+sw   $0 $2 0	=> M[$0+0]= $2		=> 6080
+sw   $0 $4 4	=> M[$0+4]= $4		=> 6104
+lw   $0 $1 4	=> $4 = M[$0+4]		=> 4044
+
+
