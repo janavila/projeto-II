@@ -9,6 +9,7 @@ void main () {
     int choice=-1;
     char nome[50];
     FILE *memoria;
+    struct memoria_instrucao *instructions;
 
     do{
     printf("----MINI MIPS----\n");
@@ -20,9 +21,11 @@ void main () {
         //scanf("%s", nome);
         strcpy(nome,"programaTestaInstrucoes.mem");
         memoria = carrega_memoria(nome);
+        instructions = decodifica_memoria(memoria);
         break;
         case 2:
-        imprimir_memoria(memoria);
+
+        imprimir_memoria(instructions);
         break;
         case 3:
         break;

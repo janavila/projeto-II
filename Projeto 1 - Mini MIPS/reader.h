@@ -28,5 +28,5 @@ int tamanho;
 
 
 FILE *carrega_memoria(char *nome);
-void imprimir_memoria(FILE *arquivo);
-
+void imprimir_memoria(struct memoria_instrucao *mem);
+struct memoria_instrucao *decodifica_memoria(FILE *arquivo);
