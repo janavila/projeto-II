@@ -1,6 +1,6 @@
-/* struct instrucao{
+struct instrucao{
 char inst_char[17], tipo_inst;
-int opcode;
+int opcode; 
 int rs;
 int rt;
 int rd;
@@ -13,7 +13,7 @@ struct memoria_instrucao{
 struct instrucao *mem_inst;
 int tamanho;
 };
-
+/*
 struct dado{
 char dado_char[8];
 int dado;
