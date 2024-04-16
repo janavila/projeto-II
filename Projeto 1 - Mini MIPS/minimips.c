@@ -55,7 +55,7 @@ void imprimir_memoria(struct memoria_instrucao *mem) {
     int contador = 0;
 
     while(contador < 256) {
-        printf("Posição [%d]: %s\n", contador, mem->mem_inst[contador].inst_char);
+        printf("Memória [%d]: %s\n", contador, mem->mem_inst[contador].inst_char);
         contador++;
     }
 }
@@ -93,9 +93,9 @@ struct memoria_instrucao *parser(struct memoria_instrucao *mem) {
 }
 
 struct memoria_dados *cria_dados() {
-    struct memoria_dados *aux = NULL;
+    struct memoria_dados *aux = malloc (sizeof(struct memoria_dados));
 
-    aux = (struct memoria_dados*) malloc (sizeof(struct memoria_dados) * 256);
+    aux->mem_dados = (struct dado*) malloc (sizeof(struct dado) * 256);
     aux->tamanho = 256;
 
     return aux;
@@ -105,9 +105,27 @@ void imprime_dados(struct memoria_dados *data) {
     int contador = 0;
 
     while(contador < 256) {
-        printf("Posição [%d]: %d\n", contador, data->mem_dados[contador].dado); // arrumar essa parte aqui.
+        printf("Dado [%d]: %d\n", contador, data->mem_dados[contador].dado); // arrumar essa parte aqui.
         contador++;
     }
+}
+
+struct registradores *cria_registrador(){
+
+    struct registradores *aux = NULL;
+    aux = (struct registradores*) malloc (sizeof(struct registradores) * 8);
+
+    return aux;
+}
+
+void imprime_registradores(struct registradores *regs) {
+    int contador = 0;
+
+    while(contador < 8){
+        printf("Registrador [%d]: %d\n", contador, regs[contador].valor);
+        contador++;
+    }
+
 }
 
 

@@ -20,8 +20,12 @@ int dado;
 };
 
 struct memoria_dados{
-struct instrucao *mem_dados;
+struct dado *mem_dados;
 int tamanho;
+};
+
+struct registradores{
+    int valor;
 };
 
 
@@ -32,3 +36,5 @@ struct memoria_instrucao *decodifica_memoria(FILE *arquivo);
 struct memoria_instrucao *parser(struct memoria_instrucao *mem);
 struct memoria_dados *cria_dados();
 void imprime_dados(struct memoria_dados *data);
+struct registradores *cria_registrador();
+void imprime_registradores(struct registradores *regs);

@@ -11,6 +11,7 @@ void main () {
     FILE *memoria;
     struct memoria_instrucao *instructions;
     struct memoria_dados *data_memory;
+    struct registrador *regs;
 
     do{
     printf("----MINI MIPS----\n");
@@ -25,14 +26,18 @@ void main () {
         instructions = decodifica_memoria(memoria); // passa as informações para a struct.
         instructions = parser(instructions); // códifica o tipo da instrução.
         data_memory = cria_dados(); // cria a memória de dados.
+        regs = cria_registrador(); // cria registradores;
         break;
         case 2:
         imprimir_memoria(instructions);
-        imprime_dados(data_memory);
         break;
         case 3:
+        imprime_registradores(regs);
         break;
         case 4:
+        imprimir_memoria(instructions);
+        imprime_dados(data_memory);
+        imprime_registradores(regs);
         break;
         case 5:
         break;
