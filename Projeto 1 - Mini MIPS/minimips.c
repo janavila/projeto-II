@@ -10,7 +10,9 @@ FILE *carrega_memoria(char *nome){
 
     aux = fopen(nome,"r");
 
-    if(aux == NULL) printf("Arquivo inválido!\n");
+    if(aux == NULL) {
+        printf("Arquivo inválido!\n");
+    }
     else { 
         printf("Arquivo aberto com sucesso!!\n");
     }
@@ -38,7 +40,6 @@ struct memoria_instrucao *decodifica_memoria(FILE *arquivo) {
         else{
             strcpy(instructions->mem_inst[aux_cont].inst_char, linha);
             contador = 0;
-            printf("[%d]: %s\n",aux_cont,instructions->mem_inst[aux_cont].inst_char);
             aux_cont++;
 
         }
@@ -58,4 +59,39 @@ void imprimir_memoria(struct memoria_instrucao *mem) {
         contador++;
     }
 }
+
+struct memoria_instrucao *parser(struct memoria_instrucao *mem) {
+
+    struct memoria_instrucao *aux = mem;
+    struct instrucao *auxiliar = malloc (sizeof(struct instrucao));
+    char opcode[5];
+    int contador = 0;
+
+     while(contador < 256) {
+
+        strncpy(opcode, aux->mem_inst[contador].inst_char, 4);
+        opcode[4] = '\0';
+
+        if (strcmp(opcode, "0000") == 0) { // tipo R
+        aux->mem_inst[contador].tipo_inst = 'R';
+      } else if (strcmp(opcode, "0100") == 0 || strcmp(opcode, "1011") == 0 || strcmp(opcode, "1111") == 0 || strcmp(opcode, "1000") == 0)  { // tipo I
+        aux->mem_inst[contador].tipo_inst = 'I';
+        } else if (strcmp(opcode, "0010") == 0) { // tipo J
+        aux->mem_inst[contador].tipo_inst = 'J';
+        } else {
+//            printf("Instrução Inválida, tipo não encontrado");
+    }
+
+    printf("Tipo: %c\n", aux->mem_inst[contador].tipo_inst);
+
+
+        contador++;
+}
+
+
+    return aux;
+}
+
+
+
 

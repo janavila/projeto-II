@@ -22,9 +22,9 @@ void main () {
         strcpy(nome,"programaTestaInstrucoes.mem");
         memoria = carrega_memoria(nome);
         instructions = decodifica_memoria(memoria);
+        instructions = parser(instructions);
         break;
         case 2:
-
         imprimir_memoria(instructions);
         break;
         case 3:

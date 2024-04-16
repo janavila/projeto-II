@@ -30,3 +30,4 @@ int tamanho;
 FILE *carrega_memoria(char *nome);
 void imprimir_memoria(struct memoria_instrucao *mem);
 struct memoria_instrucao *decodifica_memoria(FILE *arquivo);
+struct memoria_instrucao *parser(struct memoria_instrucao *mem);
