@@ -82,7 +82,7 @@ struct memoria_instrucao *parser(struct memoria_instrucao *mem) {
 //            printf("Instrução Inválida, tipo não encontrado");
     }
 
-    printf("Tipo: %c\n", aux->mem_inst[contador].tipo_inst);
+//    printf("Tipo: %c\n", aux->mem_inst[contador].tipo_inst);
 
 
         contador++;
@@ -91,6 +91,25 @@ struct memoria_instrucao *parser(struct memoria_instrucao *mem) {
 
     return aux;
 }
+
+struct memoria_dados *cria_dados() {
+    struct memoria_dados *aux = NULL;
+
+    aux = (struct memoria_dados*) malloc (sizeof(struct memoria_dados) * 256);
+    aux->tamanho = 256;
+
+    return aux;
+}
+
+void imprime_dados(struct memoria_dados *data) {
+    int contador = 0;
+
+    while(contador < 256) {
+        printf("Posição [%d]: %d\n", contador, data->mem_dados[contador].dado); // arrumar essa parte aqui.
+        contador++;
+    }
+}
+
 
 
 

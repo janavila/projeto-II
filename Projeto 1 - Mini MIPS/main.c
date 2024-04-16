@@ -10,6 +10,7 @@ void main () {
     char nome[50];
     FILE *memoria;
     struct memoria_instrucao *instructions;
+    struct memoria_dados *data_memory;
 
     do{
     printf("----MINI MIPS----\n");
@@ -20,12 +21,14 @@ void main () {
         printf("Diga o nome do arquivo (com a extensão .mem): ");
         //scanf("%s", nome);
         strcpy(nome,"programaTestaInstrucoes.mem");
-        memoria = carrega_memoria(nome);
-        instructions = decodifica_memoria(memoria);
-        instructions = parser(instructions);
+        memoria = carrega_memoria(nome); // carrega as informações do arquivo.
+        instructions = decodifica_memoria(memoria); // passa as informações para a struct.
+        instructions = parser(instructions); // códifica o tipo da instrução.
+        data_memory = cria_dados(); // cria a memória de dados.
         break;
         case 2:
         imprimir_memoria(instructions);
+        imprime_dados(data_memory);
         break;
         case 3:
         break;

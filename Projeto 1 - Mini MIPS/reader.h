@@ -13,7 +13,7 @@ struct memoria_instrucao{
 struct instrucao *mem_inst;
 int tamanho;
 };
-/*
+
 struct dado{
 char dado_char[8];
 int dado;
@@ -24,10 +24,11 @@ struct instrucao *mem_dados;
 int tamanho;
 };
 
-*/
 
 
 FILE *carrega_memoria(char *nome);
 void imprimir_memoria(struct memoria_instrucao *mem);
 struct memoria_instrucao *decodifica_memoria(FILE *arquivo);
 struct memoria_instrucao *parser(struct memoria_instrucao *mem);
+struct memoria_dados *cria_dados();
+void imprime_dados(struct memoria_dados *data);
