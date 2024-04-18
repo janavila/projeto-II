@@ -38,3 +38,7 @@ struct memoria_dados *cria_dados();
 void imprime_dados(struct memoria_dados *data);
 struct registradores *cria_registrador();
 void imprime_registradores(struct registradores *regs);
+struct instrucao tipoI(char *inst_char);
+struct instrucao tipoJ(char *inst_char);
+struct instrucao tipoR(char *inst_char);
+int binario_decimal(char *binario);

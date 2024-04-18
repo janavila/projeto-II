@@ -46,6 +46,7 @@ void main () {
         case 7:
         break;
         case 8:
+        //executa_instrucao(instructions, data_memory, regs);
         break;
         case 9:
         break;
