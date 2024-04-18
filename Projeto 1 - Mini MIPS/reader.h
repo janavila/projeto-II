@@ -42,3 +42,4 @@ struct instrucao tipoI(char *inst_char);
 struct instrucao tipoJ(char *inst_char);
 struct instrucao tipoR(char *inst_char);
 int binario_decimal(char *binario);
+void executa_instrucao(struct memoria_instrucao *mem, int program_counter, struct registradores *regs);

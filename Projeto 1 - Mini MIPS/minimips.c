@@ -29,7 +29,7 @@ struct memoria_instrucao *decodifica_memoria(FILE *arquivo) {
     char linha[17], caractere;
     int contador=0, aux_cont=0;
 
-    instructions->tamanho = 256;
+
     instructions->mem_inst = (struct instrucao*) malloc (instructions->tamanho*sizeof(struct instrucao));
 
 
@@ -46,7 +46,9 @@ struct memoria_instrucao *decodifica_memoria(FILE *arquivo) {
         }
     }
 
+    instructions->tamanho = aux_cont; // Pega o número de instruções que tem no arquivo.
     aux_cont = 0;
+    
 
     return instructions;
 }
@@ -159,7 +161,7 @@ struct instrucao tipoR(char *inst_char) {
     char *aux_char = inst_char;
     int contador = 0;
 
-    printf("Instrução carregada: %s\n", inst_char);
+//    printf("Instrução carregada: %s\n", inst_char);
     
     strncpy(opcode, aux_char, 4);
     opcode[4] = '\0';
@@ -176,9 +178,9 @@ struct instrucao tipoR(char *inst_char) {
     strncpy(funct, aux_char + 13, 3);
     funct[3] = '\0';
     aux.funct = binario_decimal(funct);
-    printf("Opcode: %s\nRS: %s\nRT: %s\nRD: %s\nFunct: %s\n", opcode, rs, rt, rd, funct); // Mostra as funções em binário
-    printf("Decodificadas - Opcode: %d - RS: %d - RT: %d - RD: %d - Funct: %d\n", aux.opcode, aux.rs, aux.rt, aux.rd, aux.funct); // Mostra em decimal.
-
+//    printf("Opcode: %s\nRS: %s\nRT: %s\nRD: %s\nFunct: %s\n", opcode, rs, rt, rd, funct); // Mostra as funções em binário
+//    printf("Decodificadas - Opcode: %d - RS: %d - RT: %d - RD: %d - Funct: %d\n", aux.opcode, aux.rs, aux.rt, aux.rd, aux.funct); // Mostra em decimal.
+    strcpy(aux.inst_char, inst_char);
     return aux;
 
 }
@@ -190,7 +192,7 @@ struct instrucao tipoI(char *inst_char) {
     char *aux_char = inst_char;
     int contador = 0;
 
-    printf("Instrução carregada: %s\n", inst_char);
+//    printf("Instrução carregada: %s\n", inst_char);
     
     strncpy(opcode, aux_char, 4);
     opcode[4] = '\0';
@@ -205,9 +207,9 @@ struct instrucao tipoI(char *inst_char) {
     imm[6] = '\0';
     aux.imm = binario_decimal(imm);
 
-    printf("Opcode: %s\nRS: %s\nRT: %s\nImm: %s\n", opcode, rs, rt, imm); // Mostra as funções em binário
-    printf("Decodificadas - Opcode: %d - RS: %d - RT: %d - Imm: %d\n", aux.opcode, aux.rs, aux.rt, aux.imm); // Mostra em decimal.
-
+//    printf("Opcode: %s\nRS: %s\nRT: %s\nImm: %s\n", opcode, rs, rt, imm); // Mostra as funções em binário
+//    printf("Decodificadas - Opcode: %d - RS: %d - RT: %d - Imm: %d\n", aux.opcode, aux.rs, aux.rt, aux.imm); // Mostra em decimal.
+    strcpy(aux.inst_char, inst_char);
     return aux;
 
 }
@@ -218,7 +220,7 @@ struct instrucao tipoJ(char *inst_char) {
     char *aux_char = inst_char;
     int contador = 0;
 
-    printf("Instrução carregada: %s\n", inst_char);
+//    printf("Instrução carregada: %s\n", inst_char);
     
     strncpy(opcode, aux_char, 4);
     opcode[4] = '\0';
@@ -227,12 +229,48 @@ struct instrucao tipoJ(char *inst_char) {
     addr[7] = '\0';
     aux.addr = binario_decimal(addr);
 
-    printf("Opcode: %s\nADR: %s\n", opcode, addr); // Mostra as funções em binário
-    printf("Decodificadas - Opcode: %d - ADR: %d\n", aux.opcode, aux.addr); // Mostra em decimal.
+//    printf("Opcode: %s\nADR: %s\n", opcode, addr); // Mostra as funções em binário
+//    printf("Decodificadas - Opcode: %d - ADR: %d\n", aux.opcode, aux.addr); // Mostra em decimal.
 
+    strcpy(aux.inst_char, inst_char);
     return aux;
 
 }
 
+void executa_instrucao(struct memoria_instrucao *mem, int program_counter, struct registradores *regs) {
+    struct memoria_instrucao *aux = mem;
+    int resultado;
+    
+    switch(aux->mem_inst[program_counter].opcode) { //  ULA.
+        case 0: // tipo R
+        printf("-----Instrução a ser executada-----\nTipo: R\n Opcode [%d] - RS [%d] - RT [%d] - RD [%d] - Funct [%d]\n", aux->mem_inst[program_counter].opcode, aux->mem_inst[program_counter].rs, aux->mem_inst[program_counter].rt, aux->mem_inst[program_counter].rd, aux->mem_inst[program_counter].funct);
+            switch(aux->mem_inst[program_counter].funct) {
+                case 0: // soma
+                resultado = regs[aux->mem_inst[program_counter].rs].valor + regs[aux->mem_inst[program_counter].rt].valor;
+                regs[aux->mem_inst[program_counter].rd].valor = resultado;
+                break;
+                case 2: // subtrai
+                resultado = regs[aux->mem_inst[program_counter].rs].valor - regs[aux->mem_inst[program_counter].rt].valor;
+                regs[aux->mem_inst[program_counter].rd].valor = resultado;
+                break;
+                case 4: // and
+                resultado = regs[aux->mem_inst[program_counter].rs].valor & regs[aux->mem_inst[program_counter].rt].valor;
+                regs[aux->mem_inst[program_counter].rd].valor = resultado;
+                break;
+                case 5: // or
+                resultado = regs[aux->mem_inst[program_counter].rs].valor | regs[aux->mem_inst[program_counter].rt].valor;
+                regs[aux->mem_inst[program_counter].rd].valor = resultado;
+                break;
+            }
+        break;
+
+        case 4: // tipo I - addi
+        printf("-----Instrução a ser executada-----\nTipo: I\n Opcode [%d] - RS [%d] - RT [%d] - Imm [%d]\n", aux->mem_inst[program_counter].opcode, aux->mem_inst[program_counter].rs, aux->mem_inst[program_counter].rt, aux->mem_inst[program_counter].imm);
+        resultado = regs[aux->mem_inst[program_counter].rs].valor + aux->mem_inst[program_counter].imm;
+        regs[aux->mem_inst[program_counter].rt].valor = resultado;
+        break;
+
+    }
+}
 
 

@@ -6,7 +6,7 @@
 
 void main () {
 
-    int choice=-1;
+    int choice=-1, program_counter = 0;
     char nome[50];
     FILE *memoria;
     struct memoria_instrucao *instructions;
@@ -21,7 +21,7 @@ void main () {
         case 1:
         printf("Diga o nome do arquivo (com a extensão .mem): ");
         //scanf("%s", nome);
-        strcpy(nome,"programaTestaInstrucoes.mem");
+        strcpy(nome,"teste.mem");
         memoria = carrega_memoria(nome); // carrega as informações do arquivo.
         instructions = decodifica_memoria(memoria); // passa as informações para a struct.
         instructions = parser(instructions); // códifica o tipo da instrução.
@@ -44,9 +44,14 @@ void main () {
         case 6:
         break;
         case 7:
+        while(instructions->tamanho > program_counter) {
+            executa_instrucao(instructions, program_counter, regs);
+            program_counter++;
+        }
         break;
         case 8:
-        //executa_instrucao(instructions, data_memory, regs);
+        executa_instrucao(instructions, program_counter, regs);
+        program_counter++;
         break;
         case 9:
         break;
@@ -58,4 +63,7 @@ void main () {
 
 
     fclose(memoria);
+    free(instructions);
+    free(data_memory);
+    free(regs);
 }
