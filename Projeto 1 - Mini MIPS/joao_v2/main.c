@@ -4,31 +4,11 @@
 #include "reader.h"
 
 int main() {
-    struct memoria_instrucao mem_inst;
+    struct memoria_instrucao mem_inst = {0};
     int num_linhas;
     int opt = -1;
-	int pc = 0;
-	
-    // Inicializa memoria zerada
-    for (int i = 0; i < MAX; i++) {
-        memset(mem_inst.mem_inst[i].inst_char, '\0', sizeof(mem_inst.mem_inst[i].inst_char));
-        mem_inst.mem_inst[i].tipo_inst = '\0';
-        mem_inst.mem_inst[i].opcode = 0;
-		mem_inst.mem_inst[i].rs = 0;
-		mem_inst.mem_inst[i].rt = 0;
-		mem_inst.mem_inst[i].rd = 0;
-		mem_inst.mem_inst[i].funct = 0;
-		mem_inst.mem_inst[i].imm = 0;
-		mem_inst.mem_inst[i].addr = 0;
-    }
-	
-	int mem_dados[MAX];
-	
-	for (int i = 0; i < MAX; i++) {
-		mem_dados[i] = 0;
-    }
-	
-    //Inicia registradores com 0
+    int pc = 0;
+    int mem_dados[MAX] = {0};
     int registradores[8] = {0};
 
     while (opt != 0) {
@@ -44,119 +24,39 @@ int main() {
                 }
                 break;
             case 2:
-               printf("\nMemoria de instrucoes:\n");
-				for (int j = 0; j < 256; j++) {
-					if(mem_inst.mem_inst[j].tipo_inst == 'R'){
-					printf("[%i]:", j);
-					printf("Instrucao: %s \n", mem_inst.mem_inst[j].inst_char);
-					printf("    Tipo: %c \n", mem_inst.mem_inst[j].tipo_inst);
-					printf("    opcode: %d \n", mem_inst.mem_inst[j].opcode);
-					printf("    rs: %d \n", mem_inst.mem_inst[j].rs);
-					printf("    rt: %d \n", mem_inst.mem_inst[j].rt);
-					printf("    rd: %d \n", mem_inst.mem_inst[j].rd);
-					printf("    funct: %d \n\n", mem_inst.mem_inst[j].funct);
-					
-					
-					}else{
-						if(mem_inst.mem_inst[j].tipo_inst == 'I'){
-							printf("[%i]:", j);
-							printf("Instrucao: %s \n", mem_inst.mem_inst[j].inst_char);
-							printf("    Tipo: %c \n", mem_inst.mem_inst[j].tipo_inst);
-							printf("    opcode: %d \n", mem_inst.mem_inst[j].opcode);
-							printf("    rs: %d \n", mem_inst.mem_inst[j].rs);
-							printf("    rt: %d \n", mem_inst.mem_inst[j].rt);
-							printf("    imm: %d \n\n", mem_inst.mem_inst[j].imm);
-						}else{
-							if(mem_inst.mem_inst[j].tipo_inst == 'J'){
-							printf("[%i]:", j);
-							printf("Instrucao: %s \n", mem_inst.mem_inst[j].inst_char);
-							printf("    Tipo: %c \n", mem_inst.mem_inst[j].tipo_inst);
-							printf("    opcode: %d \n", mem_inst.mem_inst[j].opcode);
-							printf("    addr: %d\n\n", mem_inst.mem_inst[j].addr);
-							}
-						}
-					}
-				}
-                printf("\nMemoria de dados:\n");
-                for (int j = 0; j < 16; j++) {
-                    printf("[%i]: %d\n", j, mem_dados[j]);
+                printf("\nMemoria de instrucoes:\n");
+                for (int j = 0; j < 256; j++) {
+                    imprime_mem(&mem_inst, j);
                 }
+                imprime_dados(mem_dados);
                 break;
             case 3:
-                printf("\nRegistradores:\n");
-                for(int i=0;i<8;i++){
-                    printf("Reg[%d]: %d\n", i, registradores[i]);
-                }
+                imprime_reg(registradores);
                 break;
             case 4:
                 printf("\nMemoria de instrucoes:\n");
-				for (int j = 0; j < 256; j++) {
-					if(mem_inst.mem_inst[j].tipo_inst == 'R'){
-					printf("[%i]:", j);
-					printf("Instrucao: %s \n", mem_inst.mem_inst[j].inst_char);
-					printf("    Tipo: %c \n", mem_inst.mem_inst[j].tipo_inst);
-					printf("    opcode: %d \n", mem_inst.mem_inst[j].opcode);
-					printf("    rs: %d \n", mem_inst.mem_inst[j].rs);
-					printf("    rt: %d \n", mem_inst.mem_inst[j].rt);
-					printf("    rd: %d \n", mem_inst.mem_inst[j].rd);
-					printf("    funct: %d \n\n", mem_inst.mem_inst[j].funct);
-					
-					
-					}else{
-						if(mem_inst.mem_inst[j].tipo_inst == 'I'){
-							printf("[%i]:", j);
-							printf("Instrucao: %s \n", mem_inst.mem_inst[j].inst_char);
-							printf("    Tipo: %c \n", mem_inst.mem_inst[j].tipo_inst);
-							printf("    opcode: %d \n", mem_inst.mem_inst[j].opcode);
-							printf("    rs: %d \n", mem_inst.mem_inst[j].rs);
-							printf("    rt: %d \n", mem_inst.mem_inst[j].rt);
-							printf("    imm: %d \n\n", mem_inst.mem_inst[j].imm);
-						}else{
-							if(mem_inst.mem_inst[j].tipo_inst == 'J'){
-							printf("[%i]:", j);
-							printf("Instrucao: %s \n", mem_inst.mem_inst[j].inst_char);
-							printf("    Tipo: %c \n", mem_inst.mem_inst[j].tipo_inst);
-							printf("    opcode: %d \n", mem_inst.mem_inst[j].opcode);
-							printf("    addr: %d\n\n", mem_inst.mem_inst[j].addr);
-							}
-						}
-					}
-				}
-                printf("\nMemoria de dados:\n");
-                for (int j = 0; j < 16; j++) {
-                    printf("[%i]: %d\n", j, mem_dados[j]);
+                for (int j = 0; j < 256; j++) {
+                    imprime_mem(&mem_inst, j);
                 }
-                printf("\nRegistradores:\n");
-                for(int i=0;i<8;i++){
-                    printf("Reg[%d]: %d\n", i, registradores[i]);
-                }
+                imprime_dados(mem_dados);
+                imprime_reg(registradores);
+                break;
+            
+            case 5:
+            salva_asm(mem_inst);
+            break;
+
+            case 6:
+            salva_mem(mem_dados);
+            break;
+
+            case 7:
+			for(pc;pc<=mem_inst.tamanho;0){
+				executa_instrucao(&mem_inst, &pc, registradores, mem_dados);
+			}
                 break;
             case 8:
-				printf("\nPC [%d]\n", pc);
-				switch(mem_inst.mem_inst[pc].opcode) {
-				case 0:
-					registradores[mem_inst.mem_inst[pc].rd] = result_ula(mem_inst.mem_inst[pc].opcode, mem_inst.mem_inst[pc].funct, registradores[mem_inst.mem_inst[pc].rs], registradores[mem_inst.mem_inst[pc].rt]);
-					pc++;
-					break;
-				case 2:
-					pc = mem_inst.mem_inst[pc].addr * 2;
-					break;
-				case 4:
-					registradores[mem_inst.mem_inst[pc].rt] = result_ula(mem_inst.mem_inst[pc].opcode, 0, registradores[mem_inst.mem_inst[pc].rs], mem_inst.mem_inst[pc].imm);
-					pc++;
-					break;
-				case 8: 
-					pc++;
-					break;
-				case 11:
-					registradores[mem_inst.mem_inst[pc].rt] = mem_dados[result_ula(mem_inst.mem_inst[pc].opcode, 0, mem_inst.mem_inst[pc].rs, mem_inst.mem_inst[pc].imm)];
-					pc++;
-					break;
-				case 15:
-					mem_dados[result_ula(mem_inst.mem_inst[pc].opcode, 0, mem_inst.mem_inst[pc].rs, mem_inst.mem_inst[pc].imm)] = registradores[mem_inst.mem_inst[pc].rt];
-					pc++;
-					break;
-				}
+                executa_instrucao(&mem_inst, &pc, registradores, mem_dados);
                 break;
             case 0:
                 printf("Saindo do programa...");
