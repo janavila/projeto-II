@@ -10,6 +10,7 @@ int main() {
     int pc = 0;
     int mem_dados[MAX] = {0};
     int registradores[8] = {0};
+	struct Estado estado_anterior;
 
     while (opt != 0) {
         printf("\n-------------\n1) Carregar Memoria\n2) Imprimir Memoria\n3) Imprimir Registradores\n4) Imprimir todo o simulador\n5) Salvar .asm\n6) Salvar .mem\n7) Executar Programa (run)\n8) Executa uma instrucao (Step)\n9) Volta uma instrucao (back)\n0) Sair\n-------------\nOpcao: ");
@@ -52,12 +53,19 @@ int main() {
 
             case 7:
 			for(pc;pc<=mem_inst.tamanho;0){
+				salva_estado(&estado_anterior, pc, registradores, mem_dados);
 				executa_instrucao(&mem_inst, &pc, registradores, mem_dados);
 			}
                 break;
             case 8:
+				salva_estado(&estado_anterior, pc, registradores, mem_dados);
                 executa_instrucao(&mem_inst, &pc, registradores, mem_dados);
                 break;
+			case 9:
+				pc = estado_anterior.pc;
+                memcpy(registradores, estado_anterior.registradores, sizeof(registradores));
+                memcpy(mem_dados, estado_anterior.memoria_dados, sizeof(mem_dados));
+				break;
             case 0:
                 printf("Saindo do programa...");
                 break;

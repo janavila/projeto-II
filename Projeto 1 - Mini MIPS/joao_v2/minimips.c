@@ -122,6 +122,9 @@ int result_ula(int opcode, int funct, int a, int b){
 		case 4:
 			return a+b;
 		break;
+		case 8:
+			return a-b;
+		break;
 		case 11:
 			return a+b;
 		break;
@@ -187,7 +190,7 @@ void executa_instrucao(struct memoria_instrucao *mem_inst, int *pc, int *registr
     imprime_mem(mem_inst, *pc);
     
     switch (mem_inst->mem_inst[*pc].opcode) {
-		//ADD, SUB, OR ou And
+		//ADD, SUB, OR ou AND
         case 0:
             registradores[mem_inst->mem_inst[*pc].rd] = result_ula(mem_inst->mem_inst[*pc].opcode, mem_inst->mem_inst[*pc].funct, registradores[mem_inst->mem_inst[*pc].rs], registradores[mem_inst->mem_inst[*pc].rt]);
             (*pc)++;
@@ -203,7 +206,11 @@ void executa_instrucao(struct memoria_instrucao *mem_inst, int *pc, int *registr
             break;
 			//BEQ
         case 8: 
-            (*pc)++;
+            if(result_ula(mem_inst->mem_inst[*pc].opcode, 0 , registradores[mem_inst->mem_inst[*pc].rs], registradores[mem_inst->mem_inst[*pc].rt]) == 0){
+				(*pc) = (*pc) + (mem_inst->mem_inst[*pc].imm * 2);
+			}else {
+				(*pc)++;
+			}		
             break;
 			//LW
         case 11:
@@ -336,4 +343,10 @@ char *escolhe_registrador(int reg) {
 
     return "Error"; // caso não escolha o registrador. (erro na instrução)
 
+}
+
+void salva_estado(struct Estado *estado, int pc, int *registradores, int *mem_dados) {
+    estado->pc = pc;
+    memcpy(estado->registradores, registradores, sizeof(estado->registradores));
+    memcpy(estado->memoria_dados, mem_dados, sizeof(estado->memoria_dados));
 }

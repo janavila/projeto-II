@@ -22,6 +22,12 @@ struct memoria_instrucao {
     int tamanho;
 };
 
+struct Estado {
+    int pc;
+    int registradores[8];
+    int memoria_dados[MAX];
+};
+
 char tipo(const char opcode[]);
 int lerEArmazenarArquivo(const char *filename, struct memoria_instrucao *mem_inst, int max_lines);
 int result_ula(int opcode, int funct, int a, int b);
@@ -32,3 +38,5 @@ void executa_instrucao(struct memoria_instrucao *mem_inst, int *pc, int *registr
 void salva_mem(int *data);
 void salva_asm(struct memoria_instrucao mem_inst);
 char *escolhe_registrador(int reg);
+void salva_estado(struct Estado *estado, int pc, int *registradores, int *mem_dados);
+void imprime_estado(struct Estado *estado);
