@@ -40,3 +40,4 @@ void salva_asm(struct memoria_instrucao mem_inst);
 char *escolhe_registrador(int reg);
 void salva_estado(struct Estado *estado, int pc, int *registradores, int *mem_dados);
 void imprime_estado(struct Estado *estado);
+void carrega_dados(int *mem_dados);

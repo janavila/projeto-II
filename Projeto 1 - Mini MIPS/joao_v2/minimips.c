@@ -197,7 +197,7 @@ void executa_instrucao(struct memoria_instrucao *mem_inst, int *pc, int *registr
             break;
 			//JUMP
         case 2:
-            *pc = mem_inst->mem_inst[*pc].addr * 2;
+            *pc = mem_inst->mem_inst[*pc].addr + 1;
             break;
 			//ADDI
         case 4:
@@ -207,7 +207,7 @@ void executa_instrucao(struct memoria_instrucao *mem_inst, int *pc, int *registr
 			//BEQ
         case 8: 
             if(result_ula(mem_inst->mem_inst[*pc].opcode, 0 , registradores[mem_inst->mem_inst[*pc].rs], registradores[mem_inst->mem_inst[*pc].rt]) == 0){
-				(*pc) = (*pc) + (mem_inst->mem_inst[*pc].imm * 2);
+				(*pc) = (*pc) + 1 + (mem_inst->mem_inst[*pc].imm);
 			}else {
 				(*pc)++;
 			}		
@@ -228,27 +228,22 @@ void executa_instrucao(struct memoria_instrucao *mem_inst, int *pc, int *registr
 
 
 void salva_mem(int *data) {
-    FILE *save = NULL;
+    FILE *save = NULL, *save_dat = NULL;
     int *aux = data, contador = 0;
-    char memoria[9];
 
     save = fopen("memoria_dados.mem", "w");
-    memset(memoria, '0', 8); // preenche todos espaços da memoria com '0'
-    memoria[8] = '\0';
+    save_dat = fopen("memoria_dados.dat", "w");
 
-    if (save != NULL) {
+    if ((save && save_dat) != NULL) { // verifica se os arquivos foram abertos com sucesso.
     
     while(contador < 256) {
 
-        for(int i = 7; i >= 0; i--){ 
-        memoria[i] = (aux[contador] & 1) ? '1' : '0'; // Faz a operação And com o contador, compara posição por posição.
-        aux[contador] >>= 1;
-        }
-
-        fprintf(save, "[%d] : %s\n", contador, memoria);
+        fprintf(save, "%d\n", aux[contador]);
+        fprintf(save_dat, "%d\n", aux[contador]);
         contador++;
     }
-    printf("Arquivo salvo com sucesso");
+
+    printf("Arquivos salvos com sucesso");
     }
 
     else {
@@ -349,4 +344,31 @@ void salva_estado(struct Estado *estado, int pc, int *registradores, int *mem_da
     estado->pc = pc;
     memcpy(estado->registradores, registradores, sizeof(estado->registradores));
     memcpy(estado->memoria_dados, mem_dados, sizeof(estado->memoria_dados));
+}
+
+
+void carrega_dados(int *mem_dados) {
+    FILE *mem = NULL;
+    int contador = 0, aux_contador = 0;
+    char nome[50], aux[10], num;
+
+    printf("Nome do arquivo da memória de dados: ");
+    scanf("%s", nome);
+
+    mem = fopen(nome, "r");
+
+    while ((num = fgetc(mem)) != EOF) { // lê todos os caracteres do arquivo
+        if(num != '\n') { // só pega os caracteres que não seja o enter
+            aux[contador] = num;
+            contador++;
+        }
+        else{
+            mem_dados[aux_contador] = atoi(aux);
+            contador = 0;
+            aux_contador++;
+            memset(aux, '\0', sizeof(aux)); // zera toda a string para colocar os novos dados.
+        }
+
+    }
+
 }
