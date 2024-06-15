@@ -3,6 +3,8 @@
 #include <string.h>
 #include "reader.h"
 
+//teste
+
 int lerEArmazenarArquivo(const char *filename, struct memoria *mem, int max_linhas) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
