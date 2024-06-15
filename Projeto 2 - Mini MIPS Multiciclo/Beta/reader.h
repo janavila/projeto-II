@@ -45,4 +45,6 @@ int lerEArmazenarArquivo(const char *filename, struct memoria *mem, int max_linh
 int ULA(int opcode, int funct, int a, int b);
 void imprime_mem(struct memoria *mem, int j);
 void imprime_reg(int registradores[], struct reg_ab ab);
-void executa_instrucao();
+void decodificar(struct reg_inst *inst);
+char tipo(const char opcode[]);
+int extende_converte(const char *imm);
