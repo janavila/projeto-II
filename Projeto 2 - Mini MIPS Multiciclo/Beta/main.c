@@ -3,6 +3,8 @@
 #include <string.h>
 #include "reader.h"
 
+//teste
+
 int main() {
     struct memoria mem = {0};
 	struct reg_inst reginst = {0};
