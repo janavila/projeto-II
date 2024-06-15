@@ -3,8 +3,6 @@
 #include <string.h>
 #include "reader.h"
 
-//teste
-
 int main() {
     struct memoria mem = {0};
 	struct reg_inst reginst = {0};
@@ -18,7 +16,7 @@ int main() {
 	int registradores[8] = {0};
 	int ciclos = 0;
 
-    while (opt != 0) {
+    while(opt != 0){
         printf("\n-------------MINI MIPS-------------\n");
         printf("1) Carregar Memoria\n");
         printf("2) Imprimir Memoria\n");
@@ -65,7 +63,7 @@ int main() {
             case 8: //STEP
 				switch(ciclos){
 					case 0:
-						printf("\nCiclo 1 - Busca de Instrução\n");
+						printf("\nCiclo 1 - Busca de Instrucao\n");
 						//1. Busca da Instrução (e incremento do PC)
 						strcpy(reginst.inst_char, mem.linhas[pc_aux.pc_soma]);
 						printf("\nRegistrador de instrucoes: %s", reginst.inst_char);
@@ -75,11 +73,21 @@ int main() {
 						ciclos++;
 					break;
 					case 1:
-                        printf("\nCiclo 2 - Decodificação de Instruções\n");
+                        printf("\nCiclo 2 - Decodificacao de Instrucoes\n");
                         //2. Decodificação de Instruções.
-                        //ab.reg_a = 
-                        //ab.reg_b = 
+						decodificar(&reginst);
+						printf("tipo_inst: %c\n", reginst.inst.tipo_inst);
+                        printf("opcode: %d\n", reginst.inst.opcode);
+                        printf("rs: %d\n", reginst.inst.rs);
+                        printf("rt: %d\n", reginst.inst.rt);
+                        printf("rd: %d\n", reginst.inst.rd);
+                        printf("funct: %d\n", reginst.inst.funct);
+                        printf("imm: %d\n", reginst.inst.imm);
+                        printf("addr: %d\n", reginst.inst.addr);
 
+                        // ab.reg_a =
+                        // ab.reg_b =
+                        ciclos++;
 					break;
 					case 2:
 					break;
