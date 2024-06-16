@@ -194,3 +194,74 @@ int extende_converte(const char *imm){
 	//printf("Decimal: %d\n", decimal);
 	return decimal;
 }
+
+
+
+void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct reg_inst inst, struct controle_pc *pc) {
+	struct reg_inst aux = inst; // auxiliar
+
+	switch(*ciclos) {
+		case 2:
+		printf("\nCiclo [%d] - Executa Instruções\n", *ciclos);
+			switch(aux.inst.tipo_inst) {
+
+				case ('R'): // executa os ciclos conforme o tipo R.
+				printf("Instrução tipo R\n");
+				pc->saida_ula = ULA(aux.inst.opcode, aux.inst.funct, ab->reg_a, ab->reg_b);
+				printf("ULA Saída = [%d]", pc->saida_ula);
+				*ciclos = *ciclos + 1; // não funciona fazer *ciclos++;
+				break;
+
+				case ('I'):
+				printf("Instrução tipo I - Instrução de referencia a memória\n");
+				pc->saida_ula = ab->reg_a + aux.inst.imm;
+				printf("ULA Saída = [%d]", pc->saida_ula);
+				*ciclos = *ciclos + 1;
+				break;
+
+				case ('J'):
+
+
+
+
+				break;
+				default: printf("Erro!!");
+			}
+			break;
+		
+		case 3:
+			switch(aux.inst.tipo_inst) {
+				case 'R': // executa os ciclos conforme o tipo R.
+				printf("\nCiclo [%d] - Final da Execução Tipo R\n", *ciclos);
+				registradores[aux.inst.rd] = pc->saida_ula;
+				printf("Registrador [%d] = %d\n", aux.inst.rd, pc->saida_ula);
+				printf("Ciclo Finalizado!");
+				*ciclos = 0; // flag para pular para próxima instrução.
+				break;
+
+				case 'I': // executa os ciclos conforme o tipo I.
+				printf("Ciclo [%d] - Final da Execução Tipo I\n", *ciclos);
+				registradores[aux.inst.rt] = pc->saida_ula;
+				printf("Registrador [%d] = %d\n", aux.inst.rt, pc->saida_ula);
+				printf("Ciclo Finalizado!");
+				*ciclos = 0;
+				break;
+
+
+				case 'J': // executa os ciclos conforme o tipo J.
+				break;
+
+			
+
+			}
+		break;
+
+		case 4:
+		break;
+
+		case 5:
+		break;
+
+}
+
+}
