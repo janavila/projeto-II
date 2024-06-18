@@ -16,7 +16,7 @@ int main() {
 	int registradores[8] = {0};
 	int ciclos = 0;
 
-    while (opt != 0) {
+    while(opt != 0){
         printf("\n-------------MINI MIPS-------------\n");
         printf("1) Carregar Memoria\n");
         printf("2) Imprimir Memoria\n");
@@ -45,6 +45,8 @@ int main() {
                 for (int j = 0; j < mem.tamanho; j++) {
                     imprime_mem(&mem, j);
                 }
+
+                printf("Quantidade de Instruções: %d", mem.tamanho);
                 break;
             case 3: 
 				printf("\nRegistradores:\n");
@@ -60,28 +62,55 @@ int main() {
                 break;
             case 7: 
                 break;
+
             case 8: //STEP
 				switch(ciclos){
 					case 0:
-						printf("\nCiclo 1 - Busca de Instrução\n");
+						printf("\nCiclo [%d] - Busca de Instrucao\n", ciclos);
 						//1. Busca da Instrução (e incremento do PC)
 						strcpy(reginst.inst_char, mem.linhas[pc_aux.pc_soma]);
-						printf("\nRegistrador de instrucoes: %s", reginst.inst_char);
+						printf("\nRegistrador de instrucoes - PC [%d]: %s", pc_aux.pc_soma, reginst.inst_char);
 						pc_aux.pc_soma++;
 						printf("\nPC + 1: %d", pc_aux.pc_soma);
 						//Incrementando o contador de ciclos
 						ciclos++;
 					break;
 					case 1:
-                        printf("\nCiclo 2 - Decodificação de Instruções\n");
+                        printf("\nCiclo [%d] - Decodificacao de Instrucoes\n", ciclos);
                         //2. Decodificação de Instruções.
-                        //ab.reg_a = 
-                        //ab.reg_b = 
+						decodificar(&reginst);
+						
+                        printf("tipo_inst: %c\n", reginst.inst.tipo_inst);
+                        printf("opcode: %d\n", reginst.inst.opcode);
+                        printf("rs: %d\n", reginst.inst.rs);
+                        printf("rt: %d\n", reginst.inst.rt);
+                        printf("rd: %d\n", reginst.inst.rd);
+                        printf("funct: %d\n", reginst.inst.funct);
+                        printf("imm: %d\n", reginst.inst.imm);
+                        printf("addr: %d\n", reginst.inst.addr);
 
+                        ab.reg_a = reginst.inst.rs;
+                        ab.reg_b = reginst.inst.rt;
+                        pc_aux.saida_ula = (pc_aux.pc_soma + 1) + reginst.inst.imm;
+                        printf("\nA: %d - B: %d - SaidaULA = %d", ab.reg_a, ab.reg_b, pc_aux.saida_ula);
+                        ciclos++;
 					break;
 					case 2:
+                        executa_ciclos(&ciclos,&registradores,&ab,reginst, &pc_aux);
 					break;
-				}
+
+                    case 3:
+                        executa_ciclos(&ciclos,&registradores,&ab,reginst, &pc_aux);   
+                    break;                 
+				
+                    case 4:
+                        executa_ciclos(&ciclos,&registradores,&ab,reginst, &pc_aux);
+                    break;
+
+                    case 5:
+                        executa_ciclos(&ciclos,&registradores,&ab,reginst, &pc_aux);
+                    break;
+                }
                 break;
             case 9: 
                 break;
