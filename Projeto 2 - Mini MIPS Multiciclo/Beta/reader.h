@@ -16,7 +16,7 @@ struct memoria {
     char linhas[MAX][TAMANHO + 1];
     int tamanho;
 	//ADICIONEI ESSA VARIAVEL PRA SABER SE O QUE ESTA ARMAZENADO É UMA INSTRUÇÃO OU UM DADO
-	int tipo[MAX]; //Instrucao (0) - Dados (1)
+	int tipo[MAX]; //Instrucao (1) - Dados (2)
 };
 
 struct reg_inst {

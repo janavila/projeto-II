@@ -228,6 +228,7 @@ void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct r
 							pc->pc_soma = pc->saida_ula;
 							printf("Posicao PC: %d\n", pc->pc_soma);
 							printf("Ciclo Finalizado!");
+							*ciclos = 0;
 						}else{
 							printf("\nCiclo [%d] - Final da Execução Tipo R\n", *ciclos);
 							printf("Posicao PC: %d\n", pc->pc_soma);
