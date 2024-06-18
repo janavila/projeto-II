@@ -21,12 +21,14 @@ int lerEArmazenarArquivo(const char *filename, struct memoria *mem, int max_linh
         // Verifica se a linha não está vazia
         if (strlen(linha) > 0) {
             strncpy(mem->linhas[count], linha, TAMANHO);
+			mem->tipo[count] = 1;
             mem->linhas[count][TAMANHO] = '\0'; 
             count++;
         }
     }
 
     mem->tamanho = count;
+	//DEFININDO O TIPO Instrucao NA STRUCT
     fclose(file);
 
     return count;
@@ -65,8 +67,6 @@ void imprime_reg(int registradores[], struct reg_ab regs){
     for(int i=0;i<8;i++){
         printf("Reg[%d]: %d\n", i, registradores[i]);
     }
-    printf("Reg [A]: %d\nReg [B]: %d", regs.reg_a, regs.reg_b);
-
 }
 
 void decodificar(struct reg_inst *inst){
@@ -197,26 +197,59 @@ int extende_converte(const char *imm){
 
 
 
-void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct reg_inst inst, struct controle_pc *pc) {
+void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct reg_inst inst, struct controle_pc *pc, struct reg_mem *rmem, struct memoria *mem) {
 	struct reg_inst aux = inst; // auxiliar
 
 	switch(*ciclos) {
 		case 2:
-		printf("\nCiclo [%d] - Executa Instruções\n", *ciclos);
+		printf("\nCiclo [%d] - Executa Instrucoes\n", *ciclos);
 			switch(aux.inst.tipo_inst) {
 
 				case ('R'): // executa os ciclos conforme o tipo R.
-				printf("Instrução tipo R\n");
+				printf("Instrucao tipo R\n");
 				pc->saida_ula = ULA(aux.inst.opcode, aux.inst.funct, ab->reg_a, ab->reg_b);
 				printf("ULA Saída = [%d]", pc->saida_ula);
-				*ciclos = *ciclos + 1; // não funciona fazer *ciclos++;
+				*ciclos = *ciclos + 1; // não funciona fazer *ciclos++; blz kkkkk
 				break;
 
 				case ('I'):
-				printf("Instrução tipo I - Instrução de referencia a memória\n");
-				pc->saida_ula = ab->reg_a + aux.inst.imm;
-				printf("ULA Saída = [%d]", pc->saida_ula);
-				*ciclos = *ciclos + 1;
+				switch(inst.inst.opcode){
+					//ADDI
+					case 4:
+						printf("Instrucao tipo I - Instrucao de referencia a memória\n");
+						pc->saida_ula = ab->reg_a + aux.inst.imm;
+						printf("ULA Saída = [%d]", pc->saida_ula);
+						*ciclos = *ciclos + 1;
+					break;
+					//BEQ
+					case 8:
+						if(ULA(aux.inst.opcode, aux.inst.funct, ab->reg_a, ab->reg_b)==0){
+							printf("\nCiclo [%d] - Final da Execução Tipo R\n", *ciclos);
+							pc->pc_soma = pc->saida_ula;
+							printf("Posicao PC: %d\n", pc->pc_soma);
+							printf("Ciclo Finalizado!");
+						}else{
+							printf("\nCiclo [%d] - Final da Execução Tipo R\n", *ciclos);
+							printf("Posicao PC: %d\n", pc->pc_soma);
+							printf("Ciclo Finalizado!");
+							*ciclos = 0;
+						}
+					break;
+					//LW
+					case 11:
+						printf("Instrucao tipo I - Instrucao de referencia a memória\n");
+						pc->saida_ula = ab->reg_a + aux.inst.imm;
+						printf("ULA Saída = [%d]", pc->saida_ula);
+						*ciclos = *ciclos + 1;
+					break;
+					//SW
+					case 15:
+						printf("Instrucao tipo I - Instrucao de referencia a memória\n");
+						pc->saida_ula = ab->reg_a + aux.inst.imm;
+						printf("ULA Saída = [%d]", pc->saida_ula);
+						*ciclos = *ciclos + 1;
+					break;
+				}
 				break;
 
 				case ('J'):
@@ -236,15 +269,39 @@ void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct r
 				registradores[aux.inst.rd] = pc->saida_ula;
 				printf("Registrador [%d] = %d\n", aux.inst.rd, pc->saida_ula);
 				printf("Ciclo Finalizado!");
-				*ciclos = 0; // flag para pular para próxima instrução.
+				*ciclos = 0; // flag para pular para próxima Instrucao.
 				break;
 
 				case 'I': // executa os ciclos conforme o tipo I.
-				printf("Ciclo [%d] - Final da Execução Tipo I\n", *ciclos);
-				registradores[aux.inst.rt] = pc->saida_ula;
-				printf("Registrador [%d] = %d\n", aux.inst.rt, pc->saida_ula);
-				printf("Ciclo Finalizado!");
-				*ciclos = 0;
+				switch(inst.inst.opcode){
+					//ADDI
+					case 4:
+						printf("Ciclo [%d] - Final da Execução ADDI\n", *ciclos);
+						registradores[aux.inst.rt] = pc->saida_ula;
+						printf("Registrador [%d] = %d\n", aux.inst.rt, pc->saida_ula);
+						printf("Ciclo Finalizado!");
+						*ciclos = 0;
+					break;
+					//LW
+					case 11:
+						if(mem->tipo[pc->saida_ula]==2){
+							rmem->dados = strtol(mem->linhas[pc->saida_ula], NULL, 10);
+						}else{
+							rmem->dados = 0;
+						}
+						printf("Registrador de memoria: %d\n", rmem->dados);
+						*ciclos = *ciclos + 1;
+					break;
+					//SW
+					case 15:
+						printf("Ciclo [%d] - Final da Execução SW\n", *ciclos);
+						sprintf(mem->linhas[pc->saida_ula], "%d", ab->reg_b);
+						mem->tipo[pc->saida_ula] = 2;
+						printf("Memoria[%d]: %s\n", pc->saida_ula, mem->linhas[pc->saida_ula]);
+						printf("Ciclo Finalizado!");
+						*ciclos = 0;
+					break;
+				}
 				break;
 
 
@@ -257,9 +314,11 @@ void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct r
 		break;
 
 		case 4:
-		break;
-
-		case 5:
+			printf("Ciclo [%d] - Final da Execução SW\n", *ciclos);
+			registradores[aux.inst.rt] = rmem->dados;
+			printf("Registrador[%d]: %d\n", aux.inst.rt, registradores[aux.inst.rt]);
+			printf("Ciclo Finalizado!");
+			*ciclos = 0;
 		break;
 
 }

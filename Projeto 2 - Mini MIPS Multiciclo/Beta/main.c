@@ -15,6 +15,7 @@ int main() {
 	//int pc = 0;
 	int registradores[8] = {0};
 	int ciclos = 0;
+	int tipoarquivo;
 
     while(opt != 0){
         printf("\n-------------MINI MIPS-------------\n");
@@ -31,22 +32,38 @@ int main() {
 
         switch (opt) {
             case 1:
-                printf("Nome do arquivo: ");
-                scanf("%s", nome);
-                num_linhas = lerEArmazenarArquivo(nome, &mem, MAX);
-                if (num_linhas == -1) {
-                    return 1;
-                } else {
-                    printf("\nArquivo carregado com sucesso!\n");
-                }
+				//MODIFICAÇÃO NA MEMÓRIA
+				printf("Carregar Instrucoes (1) ou Dados (2): ");
+				scanf("%d", &tipoarquivo);
+				switch(tipoarquivo){
+					//Instrucao
+					case 1:
+						printf("Nome do arquivo: ");
+						scanf("%s", nome);
+						num_linhas = lerEArmazenarArquivo(nome, &mem, MAX);
+						if (num_linhas == -1) {
+							return 1;
+						} else {
+							printf("\nArquivo carregado com sucesso!\n");
+						}
+					break;
+					
+					//DADOS
+					case 2:
+						
+					break;
+					
+					//INVÁLIDO
+					default:
+						printf("Invalido!");
+					break;
+				}
                 break;
             case 2: 
                 printf("\nMemoria:\n");
                 for (int j = 0; j < mem.tamanho; j++) {
                     imprime_mem(&mem, j);
                 }
-
-                printf("Quantidade de Instruções: %d", mem.tamanho);
                 break;
             case 3: 
 				printf("\nRegistradores:\n");
@@ -67,13 +84,18 @@ int main() {
 				switch(ciclos){
 					case 0:
 						printf("\nCiclo [%d] - Busca de Instrucao\n", ciclos);
-						//1. Busca da Instrução (e incremento do PC)
-						strcpy(reginst.inst_char, mem.linhas[pc_aux.pc_soma]);
-						printf("\nRegistrador de instrucoes - PC [%d]: %s", pc_aux.pc_soma, reginst.inst_char);
-						pc_aux.pc_soma++;
-						printf("\nPC + 1: %d", pc_aux.pc_soma);
-						//Incrementando o contador de ciclos
-						ciclos++;
+						//1. Busca da Instrucao (e incremento do PC)
+							if(mem.tipo[pc_aux.pc_soma]==1){
+								strcpy(reginst.inst_char, mem.linhas[pc_aux.pc_soma]);
+								printf("\nRegistrador de instrucoes - PC [%d]: %s", pc_aux.pc_soma, reginst.inst_char);
+								pc_aux.pc_soma++;
+								printf("\nPC + 1: %d", pc_aux.pc_soma);
+							//Incrementando o contador de ciclos
+							ciclos++;
+							}else{
+									printf("A posicao indicada nao eh uma instrucao!");
+									pc_aux.pc_soma++;
+								}
 					break;
 					case 1:
                         printf("\nCiclo [%d] - Decodificacao de Instrucoes\n", ciclos);
@@ -89,27 +111,26 @@ int main() {
                         printf("imm: %d\n", reginst.inst.imm);
                         printf("addr: %d\n", reginst.inst.addr);
 
-                        ab.reg_a = reginst.inst.rs;
-                        ab.reg_b = reginst.inst.rt;
+						//TIPO R CORRIGIDO
+                        ab.reg_a = registradores[reginst.inst.rs];
+                        ab.reg_b = registradores[reginst.inst.rt];
+						
                         pc_aux.saida_ula = (pc_aux.pc_soma + 1) + reginst.inst.imm;
                         printf("\nA: %d - B: %d - SaidaULA = %d", ab.reg_a, ab.reg_b, pc_aux.saida_ula);
                         ciclos++;
 					break;
 					case 2:
-                        executa_ciclos(&ciclos,&registradores,&ab,reginst, &pc_aux);
+						executa_ciclos(&ciclos, registradores, &ab, reginst, &pc_aux, &regmem, &mem);
 					break;
-
-                    case 3:
-                        executa_ciclos(&ciclos,&registradores,&ab,reginst, &pc_aux);   
-                    break;                 
-				
-                    case 4:
-                        executa_ciclos(&ciclos,&registradores,&ab,reginst, &pc_aux);
-                    break;
-
-                    case 5:
-                        executa_ciclos(&ciclos,&registradores,&ab,reginst, &pc_aux);
-                    break;
+					case 3:
+						executa_ciclos(&ciclos, registradores, &ab, reginst, &pc_aux, &regmem, &mem);   
+					break;                 
+					case 4:
+						executa_ciclos(&ciclos, registradores, &ab, reginst, &pc_aux, &regmem, &mem);
+					break;
+					case 5:
+						executa_ciclos(&ciclos, registradores, &ab, reginst, &pc_aux, &regmem, &mem);
+					break;
                 }
                 break;
             case 9: 
