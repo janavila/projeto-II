@@ -15,6 +15,8 @@ struct instrucao {
 struct memoria {
     char linhas[MAX][TAMANHO + 1];
     int tamanho;
+	//ADICIONEI ESSA VARIAVEL PRA SABER SE O QUE ESTA ARMAZENADO É UMA INSTRUÇÃO OU UM DADO
+	int tipo[MAX]; //Instrucao (0) - Dados (1)
 };
 
 struct reg_inst {
@@ -48,4 +50,4 @@ void imprime_reg(int registradores[], struct reg_ab ab);
 void decodificar(struct reg_inst *inst);
 char tipo(const char opcode[]);
 int extende_converte(const char *imm);
-void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct reg_inst inst, struct controle_pc *pc);
+void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct reg_inst inst, struct controle_pc *pc, struct reg_mem *rmem, struct memoria *mem);
