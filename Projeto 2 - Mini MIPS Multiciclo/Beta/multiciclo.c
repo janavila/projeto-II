@@ -162,7 +162,7 @@ int extende_converte(const char *imm){
 		//Subtraindo 1
 		while(tamanho>0 && extendido[tamanho]=='0'){
 			tamanho--;
-			printf("Trocando caracteres[%d]:%s\n", tamanho, extendido);
+			//printf("Trocando caracteres[%d]:%s\n", tamanho, extendido);
 		}
 		//printf("Posicao que vai trocar: %d\n", tamanho);
 		if (tamanho > 0) {
@@ -253,16 +253,19 @@ void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct r
 				}
 				break;
 
-				case ('J'):
-
-
-
-
+				case ('J'): // Duvida nesse parte.
+/*						printf("Ciclo %d - Final da Execução tipo J\n", *ciclos);
+						pc->jump = aux.inst.addr + 1;
+						printf("Jump - [%d]", pc->jump);
+						pc->pc_soma = pc->jump; // atribuir no pc soma pra não mudar a lógica ou fazer um if caso for jump?
+						*ciclos = 0;
 				break;
+*/
 				default: printf("Erro!!");
 			}
 			break;
-		
+			
+
 		case 3:
 			switch(aux.inst.tipo_inst) {
 				case 'R': // executa os ciclos conforme o tipo R.
@@ -305,12 +308,6 @@ void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct r
 				}
 				break;
 
-
-				case 'J': // executa os ciclos conforme o tipo J.
-				break;
-
-			
-
 			}
 		break;
 
@@ -323,5 +320,103 @@ void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct r
 		break;
 
 }
+
+}
+
+
+char *escolhe_registrador(int reg) {
+
+    switch(reg) {
+        case 0: return "$0";
+        case 1: return "$r1";
+        case 2: return "$r2";
+        case 3: return "$r3";
+        case 4: return "$r4";
+        case 5: return "$r5";
+        case 6: return "$r6";
+        case 7: return "SWs";
+        case 8: return "LEDs";
+    }
+
+    return "Error"; // caso não escolha o registrador. (erro na instrução)
+
+}
+
+
+void salva_asm(struct memoria mem) {
+    FILE *save = NULL;
+    save = fopen("instrucoes.asm", "w");
+    struct memoria aux = mem;
+    int contador = 0, tamanho = mem.tamanho;
+    char tipo[20];
+	struct reg_inst aux_reginst; // auxiliar para decodificar a memoria de dados.
+
+    if(save != NULL) {
+        printf("Arquivo salvo com sucesso!\n");
+
+
+    while (contador < tamanho) {
+		if(mem.tipo[contador] == 1) {// caso seja uma instrução.
+		strcpy(aux_reginst.inst_char, mem.linhas[contador]);
+		decodificar(&aux_reginst);
+
+
+    switch(aux_reginst.inst.opcode) { // verifica qual operação vai ser realizada e salva na variável TIPO;
+        case 0:
+            switch(aux_reginst.inst.funct) {
+                case 0:
+                strcpy(tipo, "add");
+                break;
+                case 2:
+                strcpy(tipo, "sub");
+                break;
+                case 4:
+                strcpy(tipo, "and");
+                case 5:
+                strcpy(tipo, "or");
+                break;
+            }
+        fprintf(save,"%s %s, %s, %s\n", tipo, escolhe_registrador(aux_reginst.inst.rd), escolhe_registrador(aux_reginst.inst.rs), escolhe_registrador(aux_reginst.inst.rt));
+        break;
+        case 2:
+        strcpy(tipo,"j");
+        fprintf(save,"%s %d\n", tipo, aux_reginst.inst.addr);
+        break;
+        case 4:
+        strcpy(tipo,"addi");
+        fprintf(save,"%s %s, %s, %d\n", tipo, escolhe_registrador(aux_reginst.inst.rt), escolhe_registrador(aux_reginst.inst.rs), aux_reginst.inst.imm);
+        break;
+        case 8:
+        strcpy(tipo, "beq");
+        fprintf(save,"%s %s, %s, %d\n", tipo, escolhe_registrador(aux_reginst.inst.rt), escolhe_registrador(aux_reginst.inst.rs), aux_reginst.inst.imm);
+        break;
+        case 11:
+        strcpy(tipo, "lw");
+        fprintf(save,"%s %s, %d(%s)\n", tipo, escolhe_registrador(aux_reginst.inst.rt), aux_reginst.inst.imm, escolhe_registrador(aux_reginst.inst.rs));
+        break;
+        case 15:
+        strcpy(tipo,"sw");
+        fprintf(save,"%s %s, %d(%s)\n", tipo, escolhe_registrador(aux_reginst.inst.rt), aux_reginst.inst.imm, escolhe_registrador(aux_reginst.inst.rs));
+        break;
+    }
+
+    }
+
+	else { // caso seja um dado.
+		strcpy(aux_reginst.inst_char, mem.linhas[contador]);
+		fprintf(save,"%d\n", atoi(aux_reginst.inst_char)); // Transforma o valor que está na linha da memória para inteiro.
+	}
+
+	contador++;
+
+    }
+
+	}
+
+    else {
+        printf("Erro salvar o arquivo!!\n");
+    }
+
+    fclose(save);
 
 }

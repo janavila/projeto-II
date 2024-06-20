@@ -51,3 +51,5 @@ void decodificar(struct reg_inst *inst);
 char tipo(const char opcode[]);
 int extende_converte(const char *imm);
 void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct reg_inst inst, struct controle_pc *pc, struct reg_mem *rmem, struct memoria *mem);
+char *escolhe_registrador(int reg);
+void salva_asm(struct memoria mem);

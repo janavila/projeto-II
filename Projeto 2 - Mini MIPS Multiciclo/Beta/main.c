@@ -14,7 +14,7 @@ int main() {
     int opt = -1;
 	//int pc = 0;
 	int registradores[8] = {0};
-	int ciclos = 0;
+	int ciclos = 0, aux_run = 0;
 	int tipoarquivo;
 
     while(opt != 0){
@@ -23,9 +23,10 @@ int main() {
         printf("2) Imprimir Memoria\n");
         printf("3) Imprimir Registradores\n");
         printf("4) Imprimir todo o simulador\n");
-        printf("7) Executar Programa (run)\n");
-        printf("8) Executa um ciclo (Step)\n");
-        printf("9) Volta uma instrucao (back)\n");
+		printf("5) Salvar .asm\n");
+        printf("6) Executar Programa (run)\n");
+        printf("7) Executa um ciclo (Step)\n");
+        printf("8) Volta uma instrucao (back)\n");
         printf("0) Sair\n");
         printf("-----------------------------------\nOpcao: ");
         scanf("%d", &opt);
@@ -77,10 +78,60 @@ int main() {
 				printf("\nRegistradores:\n");
 				imprime_reg(registradores, ab);
                 break;
-            case 7: 
+
+			case 5:
+				salva_asm(mem);
+			break;
+            case 6: 
+				// Irá executar o código conforme o número de linhas que existem.
+				printf("Memória = %d", mem.tamanho);
+				while(aux_run < mem.tamanho) {
+					if(mem.tipo[pc_aux.pc_soma] == 1 && ciclos < 2) { // Executa se for uma instrução e não seja os primeiros ciclos.
+						printf("\nCiclo [%d] - Busca de Instrucao\n", ciclos);
+						//1. Busca da Instrucao (e incremento do PC)
+								strcpy(reginst.inst_char, mem.linhas[pc_aux.pc_soma]);
+								printf("\nRegistrador de instrucoes - PC [%d]: %s", pc_aux.pc_soma, reginst.inst_char);
+								pc_aux.pc_soma++;
+								printf("\nPC + 1: %d", pc_aux.pc_soma);
+							//Incrementando o contador de ciclos
+							ciclos++;
+                        printf("\nCiclo [%d] - Decodificacao de Instrucoes\n", ciclos);
+                        //2. Decodificação de Instruções.
+						decodificar(&reginst);
+						
+                        printf("tipo_inst: %c\n", reginst.inst.tipo_inst);
+                        printf("opcode: %d\n", reginst.inst.opcode);
+                        printf("rs: %d\n", reginst.inst.rs);
+                        printf("rt: %d\n", reginst.inst.rt);
+                        printf("rd: %d\n", reginst.inst.rd);
+                        printf("funct: %d\n", reginst.inst.funct);
+                        printf("imm: %d\n", reginst.inst.imm);
+                        printf("addr: %d\n", reginst.inst.addr);
+
+						//TIPO R CORRIGIDO
+                        ab.reg_a = registradores[reginst.inst.rs];
+                        ab.reg_b = registradores[reginst.inst.rt];
+						
+                        pc_aux.saida_ula = (pc_aux.pc_soma + 1) + reginst.inst.imm;
+                        printf("\nA: %d - B: %d - SaidaULA = %d", ab.reg_a, ab.reg_b, pc_aux.saida_ula);
+                        ciclos++;
+
+					}
+
+					else { // faz o resto dos ciclos.
+
+					while(ciclos != 0) { // quando zerar os ciclos, faz novamente.
+					executa_ciclos(&ciclos, registradores, &ab, reginst, &pc_aux, &regmem, &mem);
+					}
+					aux_run++;
+
+					}
+
+				}
+
                 break;
 
-            case 8: //STEP
+            case 7: //STEP
 				switch(ciclos){
 					case 0:
 						printf("\nCiclo [%d] - Busca de Instrucao\n", ciclos);
@@ -96,6 +147,7 @@ int main() {
 									printf("A posicao indicada nao eh uma instrucao!");
 									pc_aux.pc_soma++;
 								}
+
 					break;
 					case 1:
                         printf("\nCiclo [%d] - Decodificacao de Instrucoes\n", ciclos);
@@ -132,8 +184,6 @@ int main() {
 						executa_ciclos(&ciclos, registradores, &ab, reginst, &pc_aux, &regmem, &mem);
 					break;
                 }
-                break;
-            case 9: 
                 break;
             case 0:
                 printf("Saindo do programa...\n");
