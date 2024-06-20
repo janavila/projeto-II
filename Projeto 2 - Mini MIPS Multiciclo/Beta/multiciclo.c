@@ -21,7 +21,6 @@ int lerEArmazenarArquivo(const char *filename, struct memoria *mem, int max_linh
         // Verifica se a linha não está vazia
         if (strlen(linha) > 0) {
             strncpy(mem->linhas[count], linha, TAMANHO);
-			mem->tipo[count] = 1;
             mem->linhas[count][TAMANHO] = '\0'; 
             count++;
         }
@@ -204,12 +203,15 @@ void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct r
 		case 2:
 		printf("\nCiclo [%d] - Executa Instrucoes\n", *ciclos);
 			switch(aux.inst.tipo_inst) {
-
 				case ('R'): // executa os ciclos conforme o tipo R.
 				printf("Instrucao tipo R\n");
 				pc->saida_ula = ULA(aux.inst.opcode, aux.inst.funct, ab->reg_a, ab->reg_b);
 				printf("ULA Saída = [%d]", pc->saida_ula);
 				*ciclos = *ciclos + 1; // não funciona fazer *ciclos++; blz kkkkk
+				printf("\n\n----------------------------------------------------------\n");
+				printf("Instrucao Assembly: ");
+				mostra_asm(inst);
+				printf("----------------------------------------------------------\n");
 				break;
 
 				case ('I'):
@@ -251,16 +253,25 @@ void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct r
 						*ciclos = *ciclos + 1;
 					break;
 				}
+				printf("\n\n----------------------------------------------------------\n");
+				printf("Instrucao Assembly: ");
+				mostra_asm(inst);
+				printf("----------------------------------------------------------\n");
 				break;
 
 				case ('J'): // Duvida nesse parte.
-/*						printf("Ciclo %d - Final da Execução tipo J\n", *ciclos);
-						pc->jump = aux.inst.addr + 1;
-						printf("Jump - [%d]", pc->jump);
-						pc->pc_soma = pc->jump; // atribuir no pc soma pra não mudar a lógica ou fazer um if caso for jump?
-						*ciclos = 0;
+					printf("Ciclo %d - Final da Execução tipo J\n", *ciclos);
+					pc->jump = aux.inst.addr + 1;
+					printf("Jump - [%d]", pc->jump);
+					pc->pc_soma = pc->jump; // atribuir no pc soma pra não mudar a lógica ou fazer um if caso for jump?
+					printf("\nCiclo Finalizado!");
+					*ciclos = 0;
+					printf("\n\n----------------------------------------------------------\n");
+					printf("Instrucao Assembly: ");
+					mostra_asm(inst);
+					printf("----------------------------------------------------------\n");
 				break;
-*/
+
 				default: printf("Erro!!");
 			}
 			break;
@@ -274,6 +285,10 @@ void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct r
 				printf("Registrador [%d] = %d\n", aux.inst.rd, pc->saida_ula);
 				printf("Ciclo Finalizado!");
 				*ciclos = 0; // flag para pular para próxima Instrucao.
+				printf("\n\n----------------------------------------------------------\n");
+				printf("Instrucao Assembly: ");
+				mostra_asm(inst);
+				printf("----------------------------------------------------------\n");
 				break;
 
 				case 'I': // executa os ciclos conforme o tipo I.
@@ -288,19 +303,16 @@ void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct r
 					break;
 					//LW
 					case 11:
-						if(mem->tipo[pc->saida_ula]==2){
-							rmem->dados = strtol(mem->linhas[pc->saida_ula], NULL, 10);
-						}else{
-							rmem->dados = 0;
-						}
+							rmem->dados = strtol(mem->linhas[pc->saida_ula], NULL, 2);
 						printf("Registrador de memoria: %d\n", rmem->dados);
 						*ciclos = *ciclos + 1;
 					break;
 					//SW
 					case 15:
 						printf("Ciclo [%d] - Final da Execução SW\n", *ciclos);
-						sprintf(mem->linhas[pc->saida_ula], "%d", ab->reg_b);
-						mem->tipo[pc->saida_ula] = 2;
+						char* binario = converte_binario(ab->reg_b);
+						strcpy(mem->linhas[pc->saida_ula], binario);
+						//sprintf(mem->linhas[pc->saida_ula], "%d", ab->reg_b);
 						printf("Memoria[%d]: %s\n", pc->saida_ula, mem->linhas[pc->saida_ula]);
 						printf("Ciclo Finalizado!");
 						*ciclos = 0;
@@ -309,14 +321,22 @@ void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct r
 				break;
 
 			}
+			printf("\n\n----------------------------------------------------------\n");
+			printf("Instrucao Assembly: ");
+			mostra_asm(inst);
+			printf("----------------------------------------------------------\n");
 		break;
 
 		case 4:
-			printf("Ciclo [%d] - Final da Execução SW\n", *ciclos);
+			printf("Ciclo [%d] - Final da Execução LW\n", *ciclos);
 			registradores[aux.inst.rt] = rmem->dados;
 			printf("Registrador[%d]: %d\n", aux.inst.rt, registradores[aux.inst.rt]);
 			printf("Ciclo Finalizado!");
 			*ciclos = 0;
+			printf("\n\n----------------------------------------------------------\n");
+			printf("Instrucao Assembly: ");
+			mostra_asm(inst);
+			printf("----------------------------------------------------------\n");
 		break;
 
 }
@@ -356,7 +376,6 @@ void salva_asm(struct memoria mem) {
 
 
     while (contador < tamanho) {
-		if(mem.tipo[contador] == 1) {// caso seja uma instrução.
 		strcpy(aux_reginst.inst_char, mem.linhas[contador]);
 		decodificar(&aux_reginst);
 
@@ -400,13 +419,6 @@ void salva_asm(struct memoria mem) {
         break;
     }
 
-    }
-
-	else { // caso seja um dado.
-		strcpy(aux_reginst.inst_char, mem.linhas[contador]);
-		fprintf(save,"%d\n", atoi(aux_reginst.inst_char)); // Transforma o valor que está na linha da memória para inteiro.
-	}
-
 	contador++;
 
     }
@@ -420,3 +432,97 @@ void salva_asm(struct memoria mem) {
     fclose(save);
 
 }
+
+void mostra_asm(struct reg_inst aux_reginst){
+	
+    char tipo[20];
+	
+	decodificar(&aux_reginst);
+
+
+    switch(aux_reginst.inst.opcode) { // verifica qual operação vai ser realizada e salva na variável TIPO;
+        case 0:
+            switch(aux_reginst.inst.funct) {
+                case 0:
+                strcpy(tipo, "add");
+                break;
+                case 2:
+                strcpy(tipo, "sub");
+                break;
+                case 4:
+                strcpy(tipo, "and");
+                case 5:
+                strcpy(tipo, "or");
+                break;
+            }
+        printf("%s %s, %s, %s\n", tipo, escolhe_registrador(aux_reginst.inst.rd), escolhe_registrador(aux_reginst.inst.rs), escolhe_registrador(aux_reginst.inst.rt));
+        break;
+        case 2:
+        strcpy(tipo,"j");
+        printf("%s %d\n", tipo, aux_reginst.inst.addr);
+        break;
+        case 4:
+        strcpy(tipo,"addi");
+        printf("%s %s, %s, %d\n", tipo, escolhe_registrador(aux_reginst.inst.rt), escolhe_registrador(aux_reginst.inst.rs), aux_reginst.inst.imm);
+        break;
+        case 8:
+        strcpy(tipo, "beq");
+        printf("%s %s, %s, %d\n", tipo, escolhe_registrador(aux_reginst.inst.rt), escolhe_registrador(aux_reginst.inst.rs), aux_reginst.inst.imm);
+        break;
+        case 11:
+        strcpy(tipo, "lw");
+        printf("%s %s, %d(%s)\n", tipo, escolhe_registrador(aux_reginst.inst.rt), aux_reginst.inst.imm, escolhe_registrador(aux_reginst.inst.rs));
+        break;
+        case 15:
+        strcpy(tipo,"sw");
+        printf("%s %s, %d(%s)\n", tipo, escolhe_registrador(aux_reginst.inst.rt), aux_reginst.inst.imm, escolhe_registrador(aux_reginst.inst.rs));
+        break;
+    }
+}
+
+char *converte_binario(int num){
+	int bits = 8; 
+    char* Binario = (char*)malloc(bits + 1); // aloca memória para a string (+1 para o caractere nulo)
+    if (Binario == NULL) {
+        fprintf(stderr, "Falha na alocação de memória.\n");
+        exit(1);
+    }
+    
+    Binario[bits] = '\0'; // adiciona o caractere nulo no final da string
+
+    for (int i = bits - 1; i >= 0; i--) {
+        Binario[i] = (num & 1) ? '1' : '0'; // verifica o bit menos significativo e converte para '0' ou '1'
+        num >>= 1; // desloca os bits do número para a direita
+    }
+
+    return Binario;
+}
+
+void salva_mem(struct memoria mem){
+	FILE *save = NULL;
+    save = fopen("memoria.mem", "w");
+	int contador = 0, tamanho = MAX;
+	
+	if(save != NULL) {
+        printf("Arquivo salvo com sucesso!\n");
+		while (contador < tamanho) {
+			fprintf(save,"%s\n", mem.linhas[contador]);
+			contador++;
+		}
+	}else{
+		printf("Erro salvar o arquivo!!\n");
+	}
+	fclose(save);
+}
+
+void salva_estado(int *ciclos, struct memoria *mem, struct estado *estado, struct reg_inst *reginst, struct reg_mem *regmem, struct reg_ab *ab, struct reg_ula *ula, struct controle_pc *pc, int *registradores){	
+	estado->ciclos = *ciclos;
+ 	estado->mem = *mem;
+	estado->ula = *ula;
+    estado->reginst = *reginst;
+    estado->regmem = *regmem;
+    estado->ab = *ab;
+    estado->pc = *pc;
+    memcpy(estado->registradores, registradores, sizeof(int) * 8);
+}
+
