@@ -8,7 +8,9 @@ int main() {
 	struct reg_inst reginst = {0};
 	struct reg_mem regmem = {0};
 	struct reg_ab ab = {0};
+	struct reg_ula ula = {0};
     struct controle_pc pc_aux = {0};
+	struct estado estado_anterior;
     char nome[50];
     int num_linhas;
     int opt = -1;
@@ -26,7 +28,8 @@ int main() {
 		printf("5) Salvar .asm\n");
         printf("6) Executar Programa (run)\n");
         printf("7) Executa um ciclo (Step)\n");
-        printf("8) Volta uma instrucao (back)\n");
+        printf("8) Volta um ciclo (back)\n");
+		printf("9) Salvar Memoria\n");
         printf("0) Sair\n");
         printf("-----------------------------------\nOpcao: ");
         scanf("%d", &opt);
@@ -34,11 +37,7 @@ int main() {
         switch (opt) {
             case 1:
 				//MODIFICAÇÃO NA MEMÓRIA
-				printf("Carregar Instrucoes (1) ou Dados (2): ");
-				scanf("%d", &tipoarquivo);
-				switch(tipoarquivo){
-					//Instrucao
-					case 1:
+				printf("Carregar memoria!\n");
 						printf("Nome do arquivo: ");
 						scanf("%s", nome);
 						num_linhas = lerEArmazenarArquivo(nome, &mem, MAX);
@@ -46,18 +45,6 @@ int main() {
 							return 1;
 						} else {
 							printf("\nArquivo carregado com sucesso!\n");
-						}
-					break;
-					
-					//DADOS
-					case 2:
-						
-					break;
-					
-					//INVÁLIDO
-					default:
-						printf("Invalido!");
-					break;
 				}
                 break;
             case 2: 
@@ -86,7 +73,7 @@ int main() {
 				// Irá executar o código conforme o número de linhas que existem.
 				printf("Memória = %d", mem.tamanho);
 				while(aux_run < mem.tamanho) {
-					if(mem.tipo[pc_aux.pc_soma] == 1 && ciclos < 2) { // Executa se for uma instrução e não seja os primeiros ciclos.
+					if(ciclos < 2) { // Executa se não for os primeiros ciclos.
 						printf("\nCiclo [%d] - Busca de Instrucao\n", ciclos);
 						//1. Busca da Instrucao (e incremento do PC)
 								strcpy(reginst.inst_char, mem.linhas[pc_aux.pc_soma]);
@@ -134,22 +121,23 @@ int main() {
             case 7: //STEP
 				switch(ciclos){
 					case 0:
+						//(struct estado *estado, struct reg_inst *reginst, struct reg_mem *regmem, struct reg_ab *ab, struct reg_ula *ula, struct controle_pc *pc, int *registradores)
+						salva_estado(&ciclos, &mem, &estado_anterior, &reginst, &regmem, &ab, &ula, &pc_aux, registradores);
 						printf("\nCiclo [%d] - Busca de Instrucao\n", ciclos);
 						//1. Busca da Instrucao (e incremento do PC)
-							if(mem.tipo[pc_aux.pc_soma]==1){
 								strcpy(reginst.inst_char, mem.linhas[pc_aux.pc_soma]);
-								printf("\nRegistrador de instrucoes - PC [%d]: %s", pc_aux.pc_soma, reginst.inst_char);
+								printf("Registrador de instrucoes - PC [%d]: %s", pc_aux.pc_soma, reginst.inst_char);
 								pc_aux.pc_soma++;
 								printf("\nPC + 1: %d", pc_aux.pc_soma);
 							//Incrementando o contador de ciclos
+							printf("\n\n----------------------------------------------------------\n");
+							printf("Instrucao Assembly: ");
+							mostra_asm(reginst);
+							printf("----------------------------------------------------------\n");
 							ciclos++;
-							}else{
-									printf("A posicao indicada nao eh uma instrucao!");
-									pc_aux.pc_soma++;
-								}
-
-					break;
+						break;
 					case 1:
+						salva_estado(&ciclos, &mem, &estado_anterior, &reginst, &regmem, &ab, &ula, &pc_aux, registradores);
                         printf("\nCiclo [%d] - Decodificacao de Instrucoes\n", ciclos);
                         //2. Decodificação de Instruções.
 						decodificar(&reginst);
@@ -169,22 +157,42 @@ int main() {
 						
                         pc_aux.saida_ula = (pc_aux.pc_soma + 1) + reginst.inst.imm;
                         printf("\nA: %d - B: %d - SaidaULA = %d", ab.reg_a, ab.reg_b, pc_aux.saida_ula);
+						printf("\n\n----------------------------------------------------------\n");
+						printf("Instrucao Assembly: ");
+						mostra_asm(reginst);
+						printf("----------------------------------------------------------\n");
                         ciclos++;
 					break;
 					case 2:
+						salva_estado(&ciclos, &mem, &estado_anterior, &reginst, &regmem, &ab, &ula, &pc_aux, registradores);
 						executa_ciclos(&ciclos, registradores, &ab, reginst, &pc_aux, &regmem, &mem);
 					break;
 					case 3:
+						salva_estado(&ciclos, &mem, &estado_anterior, &reginst, &regmem, &ab, &ula, &pc_aux, registradores);
 						executa_ciclos(&ciclos, registradores, &ab, reginst, &pc_aux, &regmem, &mem);   
 					break;                 
 					case 4:
+						salva_estado(&ciclos, &mem, &estado_anterior, &reginst, &regmem, &ab, &ula, &pc_aux, registradores);
 						executa_ciclos(&ciclos, registradores, &ab, reginst, &pc_aux, &regmem, &mem);
 					break;
 					case 5:
+						salva_estado(&ciclos, &mem, &estado_anterior, &reginst, &regmem, &ab, &ula, &pc_aux, registradores);
 						executa_ciclos(&ciclos, registradores, &ab, reginst, &pc_aux, &regmem, &mem);
 					break;
                 }
                 break;
+				case 8:
+					ciclos = estado_anterior.ciclos;
+					ula = estado_anterior.ula;
+					reginst = estado_anterior.reginst;
+					regmem = estado_anterior.regmem;
+					ab = estado_anterior.ab;
+					pc_aux = estado_anterior.pc;
+					memcpy(registradores, estado_anterior.registradores, sizeof(int) * 8);
+				break;
+				case 9:
+					salva_mem(mem);
+				break;
             case 0:
                 printf("Saindo do programa...\n");
                 break;
