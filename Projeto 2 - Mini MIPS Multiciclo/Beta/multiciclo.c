@@ -379,6 +379,7 @@ void salva_asm(struct memoria mem) {
 		strcpy(aux_reginst.inst_char, mem.linhas[contador]);
 		decodificar(&aux_reginst);
 
+	if (strlen(aux_reginst.inst_char) > 15) {
 
     switch(aux_reginst.inst.opcode) { // verifica qual operação vai ser realizada e salva na variável TIPO;
         case 0:
@@ -418,7 +419,7 @@ void salva_asm(struct memoria mem) {
         fprintf(save,"%s %s, %d(%s)\n", tipo, escolhe_registrador(aux_reginst.inst.rt), aux_reginst.inst.imm, escolhe_registrador(aux_reginst.inst.rs));
         break;
     }
-
+	}
 	contador++;
 
     }
