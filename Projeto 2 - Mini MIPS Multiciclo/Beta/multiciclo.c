@@ -285,10 +285,6 @@ void executa_ciclos(int *ciclos, int *registradores, struct reg_ab *ab, struct r
 				printf("Registrador [%d] = %d\n", aux.inst.rd, pc->saida_ula);
 				printf("Ciclo Finalizado!");
 				*ciclos = 0; // flag para pular para próxima Instrucao.
-				printf("\n\n----------------------------------------------------------\n");
-				printf("Instrucao Assembly: ");
-				mostra_asm(inst);
-				printf("----------------------------------------------------------\n");
 				break;
 
 				case 'I': // executa os ciclos conforme o tipo I.
