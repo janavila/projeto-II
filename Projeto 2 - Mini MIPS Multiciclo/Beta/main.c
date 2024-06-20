@@ -182,6 +182,7 @@ int main() {
                 }
                 break;
 				case 8:
+					mem = estado_anterior.mem;
 					ciclos = estado_anterior.ciclos;
 					ula = estado_anterior.ula;
 					reginst = estado_anterior.reginst;
