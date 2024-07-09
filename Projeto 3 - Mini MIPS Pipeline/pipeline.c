@@ -513,52 +513,118 @@ void stage1(struct instrucao *inst, struct controle *controle, struct instrucao 
 	printf("PC: %d\n", controle->pc);
 	reg_inst = inst;
 	printf("Instrucao: %s\n", reg_inst->inst_char);
-	mostra_asm(&inst[controle->pc]);
+	mostra_asm(reg_inst);
 	controle->pc++;
 }
 
 void stage2(struct instrucao *inst,  struct registradores *reg, struct ab *ab){
-	switch(inst.tipo_inst){
+	printf("\nTESTE: %s\n", inst->tipo_inst);
+	switch(inst->tipo_inst){
 		case 'J':
 			ab->reg_a = inst->addr;
 		break;
 		
 		case 'I':
-			switch(opcode){
+			switch(inst->opcode){
 				//ADDI
 				case 4:
-					ab->reg_a = reg[inst->rs];
+					ab->reg_a = reg->dados[inst->rs];
 					ab->reg_b = inst->imm;
+					ab->reg_c = inst->rt;
 				break;
 				//BEQ
 				case 8:
-					ab->reg_a = reg[inst->rs];
-					ab->reg_b = inst->rt;
+					ab->reg_a = reg->dados[inst->rs];
+					ab->reg_b = reg->dados[inst->rt];
+					ab->reg_c = inst->imm;
 				break;
 				//LW
 				case 11:
-					ab->reg_a = reg[inst->rs];
+					ab->reg_a = reg->dados[inst->rs];
 					ab->reg_b = inst->imm;
+					ab->reg_c = inst->rt;
 				break;
 				//SW
 				case 15:
-					ab->reg_a = reg[inst->rs];
+					ab->reg_a = reg->dados[inst->rs];
 					ab->reg_b = inst->imm;
+					ab->reg_c = inst->rt;
 				break;
 			}
 		break;
 		
 		case 'R':
-			ab->reg_a = reg[inst->rs];
-			ab->reg_b = reg[inst->rt];
+			ab->reg_a = reg->dados[inst->rs];
+			ab->reg_b = reg->dados[inst->rt];
 			ab->funct = inst->funct;
+			ab->reg_c = inst->rd;
 		break;
 	}
 	ab->opcode = inst->opcode;
+	ab->inst = *inst;
+	printf("\nEstagio 2: \n");
+	printf("Reg a: %d\n", ab->reg_a);
+	printf("Reg b: %d\n", ab->reg_b);
+	printf("Reg c: %d\n", ab->reg_c);
 }
 
-void stage3(struct instrucao *inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *controle, struct result_ula *ula){
-	
+void stage3(struct ab *ab, struct result_ula *rula){
+	switch(ab->opcode){
+		//TIPO R
+		case 0:
+			switch(ab->funct){
+			//ADD
+			case 0:
+				rula->resultado = ula(&ab->inst,ab->reg_a,ab->reg_b);
+				rula->reg_c = ab->reg_c;
+			break;
+			//SUB
+			case 2:
+				rula->resultado =  ula(&ab->inst,ab->reg_a,ab->reg_b);
+				rula->reg_c = ab->reg_c;
+			break;
+			//AND
+			case 4:
+				rula->resultado =	 ula(&ab->inst,ab->reg_a,ab->reg_b);
+				rula->reg_c = ab->reg_c;
+			break;
+			//OR
+			case 5:
+				rula->resultado =  ula(&ab->inst,ab->reg_a,ab->reg_b);
+				rula->reg_c = ab->reg_c;
+			break;			
+			}
+		break;
+		//Jump
+		case 2:
+			rula->resultado =  ab->reg_a;
+		break;
+		//ADDI
+		case 4:
+			rula->resultado =  ula(&ab->inst,ab->reg_a,ab->reg_b);
+			rula->reg_c = ab->reg_c;
+		break;
+		//BEQ
+		case 8:
+			if(ula(&ab->inst,ab->reg_a,ab->reg_b)==0){
+				rula->resultado = ab->reg_c;
+			}else{
+				rula->resultado = 1;
+			}
+		break;
+		//LW
+		case 11:
+			rula->resultado =  ula(&ab->inst,ab->reg_a,ab->reg_b);
+			rula->reg_c = ab->reg_c;
+		break;
+		//SW
+		case 15:
+			rula->resultado =  ula(&ab->inst,ab->reg_a,ab->reg_b);
+			rula->reg_c = ab->reg_c;
+		break;
+	}
+	printf("\nEstagio 3:\n");
+	printf("Resultado ULA: %d\n", rula->resultado);
 }
 
 void stage4(struct instrucao *inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *controle, struct result_ula *ula){

@@ -82,8 +82,9 @@ int main() {
 				//Imprime(minhaPilha);
 				
 				stage1(&mem_inst.mem_inst[pc.pc], &pc, &reg_inst);
+				printf("\nTESTE: %d\n", reg_inst.opcode);
 				stage2(&reg_inst, &reg, &ab);
-				//stage3(&mem_inst.mem_inst[pc.pc], &mem_dados, &reg, &pc, &ula);
+				stage3(&ab, &ula);
 				//stage4(&mem_inst.mem_inst[pc.pc], &mem_dados, &reg, &pc, &ula);
 				//stage5(&mem_inst.mem_inst[pc.pc], &mem_dados, &reg, &pc, &ula);
 			break;

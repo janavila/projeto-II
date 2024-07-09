@@ -46,11 +46,14 @@ struct controle{
 
 struct result_ula{
 	int resultado;
+	int reg_c;
 };
 
 struct ab{
+	struct instrucao inst;
 	int reg_a;
 	int reg_b;
+	int reg_c;
 	int opcode;
 	int funct;
 };
@@ -85,7 +88,7 @@ void salva_estado(struct estado *estado, struct memoria_instrucao *mem_inst, str
 void back(struct desc_Pilha *estado, struct memoria_instrucao *mem_inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *pc);
 void stage1(struct instrucao *inst, struct controle *controle, struct instrucao *reg_inst);
 void stage2(struct instrucao *inst, struct registradores *reg, struct ab *ab);
-void stage3(struct instrucao *inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *controle, struct result_ula *ula);
+void stage3(struct ab *ab, struct result_ula *ula);
 void stage4(struct instrucao *inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *controle, struct result_ula *ula);
 void stage5(struct instrucao *inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *controle, struct result_ula *ula);
 	
