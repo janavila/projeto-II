@@ -74,6 +74,12 @@ struct estado{
 	struct memoria_dados mem_dados;
 	struct controle pc;
 	struct registradores reg;
+	struct estado1 estado1;
+	struct estado2 estado2;
+	struct estado3 estado3;
+	struct estado4 estado4;
+	int flag_estados;
+	int i;
 };
 
 struct desc_Pilha * CriaPilha();
@@ -94,8 +100,8 @@ void mostra_asm(struct instrucao *aux_reginst);
 char *escolhe_registrador(int reg);
 void salva_asm(struct memoria_instrucao *mem_inst);
 void salva_dat(struct memoria_dados *data);
-void salva_estado(struct estado *estado, struct memoria_instrucao *mem_inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *pc);
-void back(struct desc_Pilha *estado, struct memoria_instrucao *mem_inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *pc);
+void salva_estado(struct estado *estado, struct memoria_instrucao *mem_inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *pc, struct estado1 *estado1, struct estado2 *estado2, struct estado3 *estado3, struct estado4 *estado4, int *flag_estados, int *i);
+void back(struct desc_Pilha *estado, struct memoria_instrucao *mem_inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *pc, struct estado1 *estado1, struct estado2 *estado2, struct estado3 *estado3, struct estado4 *estado4, int *flag_estados, int *i);
 void stage1(struct memoria_instrucao *inst, int pc, struct estado1 *estado1);
 void stage2(struct estado1 *estado1, struct registradores *reg, struct estado2 *ab);
 void stage3(struct estado2 *ab, struct estado3 *ula);
