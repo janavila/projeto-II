@@ -124,8 +124,8 @@ int main() {
 					stage1(&mem_inst,pc.pc+i, &estado1);
 					flag_estados++;
 					break;
-				i++;
 				}
+				i++;
 			break;
 			case 9:
 				while(pc.pc<MAX){
