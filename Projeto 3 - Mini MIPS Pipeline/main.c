@@ -260,7 +260,7 @@ int main() {
 			break;
             case 10: 
 				if (EMPTY(minhaPilha)==1) {
-					Imprime(minhaPilha);
+					//Imprime(minhaPilha);
 					back(minhaPilha, &mem_inst, &mem_dados, &reg, &pc, &estado1, &estado2, &estado3, &estado4, &flag_estados, &i);
 					minhaPilha = POP(minhaPilha);
 				} else {
