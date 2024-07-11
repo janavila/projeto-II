@@ -21,15 +21,17 @@
 
 int main() {
     int opt = -1, flag_estados = 1;
+	int i = 0;
 	
 	struct memoria_instrucao mem_inst = {0};
 	struct memoria_dados mem_dados = {0};
 	struct registradores reg = {0};
 	struct controle pc = {0};
-	struct result_ula ula = {0};
 	struct estado novo_estado;
-	struct instrucao reg_inst = {0};
-	struct ab ab = {0};
+	struct estado4 estado4 = {0};
+	struct estado3 estado3 = {0};
+	struct estado2 estado2 = {0};
+	struct estado1 estado1 = {0};
 	
 	struct desc_Pilha *minhaPilha = CriaPilha();
 
@@ -84,46 +86,51 @@ int main() {
 
 				switch (flag_estados) {
 				case 1:
-					stage1(mem_inst,pc.pc, &reg_inst);
-					printf("\nTESTE: %s\n", mem_inst.mem_inst[pc.pc].inst_char); // POR ALGUM MOTIVO NÃO TÁ PEGANDO O INST_CHAR.
+					stage1(&mem_inst,pc.pc, &estado1);
+					//printf("\nTESTE: %s\n", estado1.inst.inst_char);
 					flag_estados++;
 					break;
 				case 2:
-				//	stage2(&reg_inst, &reg, &ab);
-					stage1(mem_inst,pc.pc+1, &reg_inst);
+					stage2(&estado1, &reg, &estado2);
+					stage1(&mem_inst,pc.pc+i, &estado1);
 					flag_estados++;
 					break;
-				/*case 3: 
-					stage3(&ab, &ula);
-					stage2
-					stage1(mem_inst,pc.pc+2, &reg_inst);
+				case 3: 
+					stage3(&estado2, &estado3);
+					stage2(&estado1, &reg, &estado2);
+					stage1(&mem_inst,pc.pc+i, &estado1);
 					flag_estados++;
 					break;
 				case 4:
-					stage4(&mem_inst.mem_inst[pc.pc], &mem_dados, &reg, &pc, &ula);
-					stage3
-					stage2
-					stage1(mem_inst,pc.pc+3, &reg_inst);
+					stage4(&estado3, &estado4, &mem_dados);
+					stage3(&estado2, &estado3);
+					stage2(&estado1, &reg, &estado2);
+					stage1(&mem_inst,pc.pc+i, &estado1);
 					flag_estados++;
 					break;
 				case 5:
-					stage5(&mem_inst.mem_inst[pc.pc], &mem_dados, &reg, &pc, &ula);
-					stage4
-					stage3
-					stage2
-					stage1(mem_inst,pc.pc+4, &reg_inst);
-					pc.pc++;
-					flag_estados = 1;
+					stage5(&estado4, &reg, &i);
+					stage4(&estado3, &estado4, &mem_dados);
+					stage3(&estado2, &estado3);
+					stage2(&estado1, &reg, &estado2);
+					stage1(&mem_inst,pc.pc+i, &estado1);
+					flag_estados++;
+					break;
+				default:
+					stage5(&estado4, &reg, &i);
+					stage4(&estado3, &estado4, &mem_dados);
+					stage3(&estado2, &estado3);
+					stage2(&estado1, &reg, &estado2);
+					stage1(&mem_inst,pc.pc+i, &estado1);
+					flag_estados++;
 					break;
 				}
-				*/
-			}
+				i++;
 			break;
 			case 9:
 				while(pc.pc<MAX){
 					printf("PC: %d\n", pc.pc);
 					mostra_asm(&mem_inst.mem_inst[pc.pc]);
-					executar(&mem_inst.mem_inst[pc.pc], &mem_dados, &reg, &pc, &ula);
 				}
 			break;
             case 10: 
