@@ -48,11 +48,6 @@ struct estado1{
 	struct instrucao inst;
 };
 
-struct result_ula{
-	int resultado;
-	int reg_c;
-};
-
 struct estado2{
 	struct instrucao inst;
 	int reg_a;
@@ -60,6 +55,18 @@ struct estado2{
 	int reg_c;
 	int opcode;
 	int funct;
+};
+
+struct estado3{
+	struct instrucao inst;
+	int resultado;
+	int reg_c;
+};
+
+struct estado4{
+	struct instrucao inst;
+	int dado;
+	int reg;
 };
 
 struct estado{
@@ -82,7 +89,6 @@ void carrega_dados(struct memoria_dados *mem_dados);
 void imprime_mem_inst(struct memoria_instrucao *mem_inst);
 void imprime_mem_dados(struct memoria_dados *mem_dados);
 void imprime_reg(struct registradores *reg);
-void executar(struct instrucao *inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *controle, struct result_ula *ula);
 int ula(struct instrucao *inst, int a, int b);
 void mostra_asm(struct instrucao *aux_reginst);
 char *escolhe_registrador(int reg);
@@ -92,9 +98,9 @@ void salva_estado(struct estado *estado, struct memoria_instrucao *mem_inst, str
 void back(struct desc_Pilha *estado, struct memoria_instrucao *mem_inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *pc);
 void stage1(struct memoria_instrucao *inst, int pc, struct estado1 *estado1);
 void stage2(struct estado1 *estado1, struct registradores *reg, struct estado2 *ab);
-void stage3(struct estado2 *ab, struct result_ula *ula);
-void stage4(struct instrucao *inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *controle, struct result_ula *ula);
-void stage5(struct instrucao *inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *controle, struct result_ula *ula);
+void stage3(struct estado2 *ab, struct estado3 *ula);
+void stage4(struct estado3 *estado3, struct estado4 *estado4, struct memoria_dados *mem_dados);
+void stage5(struct estado4 *estado4, struct registradores *reg, int *i);
 	
 //---------------------------------------------------------------------------------------------------------------------------
 

@@ -227,10 +227,6 @@ void imprime_reg(struct registradores *reg){
 	printf("\n");
 }
 
-void executar(struct instrucao *inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *controle, struct result_ula *ula){
-	
-}
-
 int ula(struct instrucao *inst, int a, int b){
 	switch(inst->opcode){
 		case 0:
@@ -518,7 +514,8 @@ void stage1(struct memoria_instrucao *inst, int pc, struct estado1 *estado1){
 }
 
 void stage2(struct estado1 *estado1,  struct registradores *reg, struct estado2 *estado2){
-	printf("\nTESTE: %s\n", estado1->inst.tipo_inst);
+	//printf("\nTESTE: %c\n", estado1->inst.tipo_inst);
+	
 	switch(estado1->inst.tipo_inst){
 		case 'J':
 			estado2->reg_a = estado1->inst.addr;
@@ -548,7 +545,7 @@ void stage2(struct estado1 *estado1,  struct registradores *reg, struct estado2 
 				case 15:
 					estado2->reg_a = reg->dados[estado1->inst.rs];
 					estado2->reg_b = estado1->inst.imm;
-					estado2->reg_c = estado1->inst.rt;
+					estado2->reg_c = reg->dados[estado1->inst.rt];
 				break;
 			}
 		break;
@@ -565,10 +562,11 @@ void stage2(struct estado1 *estado1,  struct registradores *reg, struct estado2 
 	printf("\nEstagio 2: \n");
 	printf("Reg a: %d\n", estado2->reg_a);
 	printf("Reg b: %d\n", estado2->reg_b);
-	printf("Reg c: %d\n", estado2->reg_c);
+	printf("Reg c: %d\n\n", estado2->reg_c);
+	
 }
 
-void stage3(struct estado2 *estado2, struct result_ula *rula){
+void stage3(struct estado2 *estado2, struct estado3 *rula){
 	switch(estado2->opcode){
 		//TIPO R
 		case 0:
@@ -625,12 +623,81 @@ void stage3(struct estado2 *estado2, struct result_ula *rula){
 	}
 	printf("\nEstagio 3:\n");
 	printf("Resultado ULA: %d\n", rula->resultado);
+	printf("Reg: %d\n\n", rula->reg_c);
+	rula->inst = estado2->inst;
 }
 
-void stage4(struct instrucao *inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *controle, struct result_ula *ula){
-	
+void stage4(struct estado3 *estado3, struct estado4 *estado4, struct memoria_dados *mem_dados){
+	//printf("Instrucao teste: %s\n\n", estado3->inst.inst_char); //TESTE
+	switch(estado3->inst.opcode){
+		//TIPO R
+		case 0:
+			estado4->reg = estado3->reg_c;
+			estado4->dado = estado3->resultado;
+		break;
+		//Jump
+		case 2:
+			estado4->dado = estado3->resultado;
+		break;
+		//ADDI
+		case 4:
+			estado4->reg = estado3->reg_c;
+			estado4->dado = estado3->resultado;
+		break;
+		//BEQ
+		case 8:
+			estado4->dado = estado3->resultado;
+		break;
+		//LW
+		case 11:
+			estado4->reg = estado3->reg_c;
+			estado4->dado = mem_dados->dados[estado3->resultado];
+		break;
+		//SW
+		case 15:
+			mem_dados->dados[estado3->resultado] = estado3->reg_c;
+		break;
+	}
+	printf("Estagio 4:\n");
+	printf("Registrador a ser armazenado: %d\n", estado4->reg);
+	printf("Dado a ser armazenado: %d\n\n", estado4->dado);
+	estado4->inst = estado3->inst;
 }
 
-void stage5(struct instrucao *inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *controle, struct result_ula *ula){
-	
+void stage5(struct estado4 *estado4, struct registradores *reg, int *i){
+	printf("Estagio 5:\n");
+	switch(estado4->inst.opcode){
+		//TIPO R
+		case 0:
+			reg->dados[estado4->reg] = estado4->dado;
+			printf("Registrador a ser armazenado: %d\n", estado4->reg);
+			printf("Dado a ser armazenado: %d\n\n", estado4->dado);
+		break;
+		//Jump
+		case 2:
+			*i = estado4->dado;
+			printf("PC: %d\n\n", estado4->dado);
+		break;
+		//ADDI
+		case 4:
+			reg->dados[estado4->reg] = estado4->dado;
+			printf("Registrador a ser armazenado: %d\n", estado4->reg);
+			printf("Dado a ser armazenado: %d\n\n", estado4->dado);
+		break;
+		//BEQ
+		case 8:
+			*i = estado4->dado;
+			printf("PC: %d\n\n", estado4->dado);
+		break;
+		//LW
+		case 11:
+			reg->dados[estado4->reg] = estado4->dado;
+			printf("Registrador a ser armazenado: %d\n", estado4->reg);
+			printf("Dado a ser armazenado: %d\n\n", estado4->dado);
+		break;
+		//SW
+		case 15:
+			
+		break;
+	}
 }
