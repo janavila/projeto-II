@@ -83,54 +83,178 @@ int main() {
 				minhaPilha = PUSH(minhaPilha, novoNodo);
 				//Imprime(minhaPilha);
 				// adicionar bolhas para o beq (nops)
-
+				
 				switch (flag_estados) {
 				case 1:
-					stage1(&mem_inst,pc.pc, &estado1);
-					//printf("\nTESTE: %s\n", estado1.inst.inst_char);
+					if(pc.pc+i <mem_inst.tamanho){
+					stage1(&mem_inst,pc.pc+i, &estado1);
+					}
 					flag_estados++;
 					break;
 				case 2:
+					if(pc.pc+i <mem_inst.tamanho+1){
 					stage2(&estado1, &reg, &estado2);
+					}
+					if(pc.pc+i <mem_inst.tamanho){
 					stage1(&mem_inst,pc.pc+i, &estado1);
+					}
 					flag_estados++;
 					break;
 				case 3: 
+					if(pc.pc+i <mem_inst.tamanho+2){
 					stage3(&estado2, &estado3);
+					}
+					if(pc.pc+i <mem_inst.tamanho+1){
 					stage2(&estado1, &reg, &estado2);
+					}
+					if(pc.pc+i <mem_inst.tamanho){
 					stage1(&mem_inst,pc.pc+i, &estado1);
+					}
 					flag_estados++;
 					break;
 				case 4:
+					if(pc.pc+i <mem_inst.tamanho+3){
 					stage4(&estado3, &estado4, &mem_dados);
+					}
+					if(pc.pc+i <mem_inst.tamanho+2){
 					stage3(&estado2, &estado3);
+					}
+					if(pc.pc+i <mem_inst.tamanho+1){
 					stage2(&estado1, &reg, &estado2);
+					}
+					if(pc.pc+i <mem_inst.tamanho){
 					stage1(&mem_inst,pc.pc+i, &estado1);
+					}
 					flag_estados++;
 					break;
 				case 5:
+					if(pc.pc+i <mem_inst.tamanho+4){
 					stage5(&estado4, &reg, &i);
+					}
+					if(pc.pc+i <mem_inst.tamanho+3){
 					stage4(&estado3, &estado4, &mem_dados);
+					}
+					if(pc.pc+i <mem_inst.tamanho+2){
 					stage3(&estado2, &estado3);
+					}
+					if(pc.pc+i <mem_inst.tamanho+1){
 					stage2(&estado1, &reg, &estado2);
+					}
+					if(pc.pc+i <mem_inst.tamanho){
 					stage1(&mem_inst,pc.pc+i, &estado1);
+					}
 					flag_estados++;
 					break;
 				default:
+					if(pc.pc+i <mem_inst.tamanho+4){
 					stage5(&estado4, &reg, &i);
+					}
+					if(pc.pc+i <mem_inst.tamanho+3){
 					stage4(&estado3, &estado4, &mem_dados);
+					}
+					if(pc.pc+i <mem_inst.tamanho+2){
 					stage3(&estado2, &estado3);
+					}
+					if(pc.pc+i <mem_inst.tamanho+1){
 					stage2(&estado1, &reg, &estado2);
+					}
+					if(pc.pc+i <mem_inst.tamanho){
 					stage1(&mem_inst,pc.pc+i, &estado1);
+					}
 					flag_estados++;
 					break;
 				}
 				i++;
 			break;
 			case 9:
-				while(pc.pc<MAX){
-					printf("PC: %d\n", pc.pc);
-					mostra_asm(&mem_inst.mem_inst[pc.pc]);
+				while(flag_estados<=mem_inst.tamanho+4){
+					salva_estado(&novo_estado, &mem_inst, &mem_dados, &reg, &pc);
+				struct nodo * novoNodo = CriaNodo(&novo_estado);
+				minhaPilha = PUSH(minhaPilha, novoNodo);
+				//Imprime(minhaPilha);
+				// adicionar bolhas para o beq (nops)
+				
+				switch (flag_estados) {
+				case 1:
+					if(pc.pc+i <mem_inst.tamanho){
+					stage1(&mem_inst,pc.pc+i, &estado1);
+					}
+					flag_estados++;
+					break;
+				case 2:
+					if(pc.pc+i <mem_inst.tamanho+1){
+					stage2(&estado1, &reg, &estado2);
+					}
+					if(pc.pc+i <mem_inst.tamanho){
+					stage1(&mem_inst,pc.pc+i, &estado1);
+					}
+					flag_estados++;
+					break;
+				case 3: 
+					if(pc.pc+i <mem_inst.tamanho+2){
+					stage3(&estado2, &estado3);
+					}
+					if(pc.pc+i <mem_inst.tamanho+1){
+					stage2(&estado1, &reg, &estado2);
+					}
+					if(pc.pc+i <mem_inst.tamanho){
+					stage1(&mem_inst,pc.pc+i, &estado1);
+					}
+					flag_estados++;
+					break;
+				case 4:
+					if(pc.pc+i <mem_inst.tamanho+3){
+					stage4(&estado3, &estado4, &mem_dados);
+					}
+					if(pc.pc+i <mem_inst.tamanho+2){
+					stage3(&estado2, &estado3);
+					}
+					if(pc.pc+i <mem_inst.tamanho+1){
+					stage2(&estado1, &reg, &estado2);
+					}
+					if(pc.pc+i <mem_inst.tamanho){
+					stage1(&mem_inst,pc.pc+i, &estado1);
+					}
+					flag_estados++;
+					break;
+				case 5:
+					if(pc.pc+i <mem_inst.tamanho+4){
+					stage5(&estado4, &reg, &i);
+					}
+					if(pc.pc+i <mem_inst.tamanho+3){
+					stage4(&estado3, &estado4, &mem_dados);
+					}
+					if(pc.pc+i <mem_inst.tamanho+2){
+					stage3(&estado2, &estado3);
+					}
+					if(pc.pc+i <mem_inst.tamanho+1){
+					stage2(&estado1, &reg, &estado2);
+					}
+					if(pc.pc+i <mem_inst.tamanho){
+					stage1(&mem_inst,pc.pc+i, &estado1);
+					}
+					flag_estados++;
+					break;
+				default:
+					if(pc.pc+i <mem_inst.tamanho+4){
+					stage5(&estado4, &reg, &i);
+					}
+					if(pc.pc+i <mem_inst.tamanho+3){
+					stage4(&estado3, &estado4, &mem_dados);
+					}
+					if(pc.pc+i <mem_inst.tamanho+2){
+					stage3(&estado2, &estado3);
+					}
+					if(pc.pc+i <mem_inst.tamanho+1){
+					stage2(&estado1, &reg, &estado2);
+					}
+					if(pc.pc+i <mem_inst.tamanho){
+					stage1(&mem_inst,pc.pc+i, &estado1);
+					}
+					flag_estados++;
+					break;
+				}
+				i++;
 				}
 			break;
             case 10: 

@@ -505,12 +505,11 @@ void printaEstado(struct estado *estado){
 }
 
 void stage1(struct memoria_instrucao *inst, int pc, struct estado1 *estado1){
-	printf("Estagio 1: Busca da instrucao [BI]\n");
-	printf("PC: %d\n", pc);
-	estado1->inst = inst->mem_inst[pc];
-	printf("Instrucao: %s\n", estado1->inst.inst_char); // NÃO ESTÁ TENDO NADA NO INST_CHAR.
-	mostra_asm(&estado1->inst);
-	//controle->pc++;
+		printf("Estagio 1: Busca da instrucao [BI]\n");
+		printf("PC: %d\n", pc);
+		estado1->inst = inst->mem_inst[pc];
+		printf("Instrucao: %s\n", estado1->inst.inst_char); 
+		mostra_asm(&estado1->inst);
 }
 
 void stage2(struct estado1 *estado1,  struct registradores *reg, struct estado2 *estado2){
