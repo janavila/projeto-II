@@ -86,7 +86,7 @@ void salva_asm(struct memoria_instrucao *mem_inst);
 void salva_dat(struct memoria_dados *data);
 void salva_estado(struct estado *estado, struct memoria_instrucao *mem_inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *pc);
 void back(struct desc_Pilha *estado, struct memoria_instrucao *mem_inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *pc);
-void stage1(struct instrucao *inst, struct controle *controle, struct instrucao *reg_inst);
+void stage1(struct memoria_instrucao inst, int pc, struct instrucao *reg_inst);
 void stage2(struct instrucao *inst, struct registradores *reg, struct ab *ab);
 void stage3(struct ab *ab, struct result_ula *ula);
 void stage4(struct instrucao *inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *controle, struct result_ula *ula);

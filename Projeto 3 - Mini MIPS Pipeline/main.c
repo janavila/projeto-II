@@ -20,7 +20,7 @@
 */
 
 int main() {
-    int opt = -1;
+    int opt = -1, flag_estados = 1;
 	
 	struct memoria_instrucao mem_inst = {0};
 	struct memoria_dados mem_dados = {0};
@@ -80,13 +80,44 @@ int main() {
 				struct nodo * novoNodo = CriaNodo(&novo_estado);
 				minhaPilha = PUSH(minhaPilha, novoNodo);
 				//Imprime(minhaPilha);
-				
-				stage1(&mem_inst.mem_inst[pc.pc], &pc, &reg_inst);
-				printf("\nTESTE: %d\n", reg_inst.opcode);
-				stage2(&reg_inst, &reg, &ab);
-				stage3(&ab, &ula);
-				//stage4(&mem_inst.mem_inst[pc.pc], &mem_dados, &reg, &pc, &ula);
-				//stage5(&mem_inst.mem_inst[pc.pc], &mem_dados, &reg, &pc, &ula);
+				// adicionar bolhas para o beq (nops)
+
+				switch (flag_estados) {
+				case 1:
+					stage1(mem_inst,pc.pc, &reg_inst);
+					printf("\nTESTE: %s\n", mem_inst.mem_inst[pc.pc].inst_char); // POR ALGUM MOTIVO NÃO TÁ PEGANDO O INST_CHAR.
+					flag_estados++;
+					break;
+				case 2:
+				//	stage2(&reg_inst, &reg, &ab);
+					stage1(mem_inst,pc.pc+1, &reg_inst);
+					flag_estados++;
+					break;
+				/*case 3: 
+					stage3(&ab, &ula);
+					stage2
+					stage1(mem_inst,pc.pc+2, &reg_inst);
+					flag_estados++;
+					break;
+				case 4:
+					stage4(&mem_inst.mem_inst[pc.pc], &mem_dados, &reg, &pc, &ula);
+					stage3
+					stage2
+					stage1(mem_inst,pc.pc+3, &reg_inst);
+					flag_estados++;
+					break;
+				case 5:
+					stage5(&mem_inst.mem_inst[pc.pc], &mem_dados, &reg, &pc, &ula);
+					stage4
+					stage3
+					stage2
+					stage1(mem_inst,pc.pc+4, &reg_inst);
+					pc.pc++;
+					flag_estados = 1;
+					break;
+				}
+				*/
+			}
 			break;
 			case 9:
 				while(pc.pc<MAX){
