@@ -16,7 +16,7 @@ void carrega_inst(struct memoria_instrucao *mem_inst){
 	file = fopen(nome_arquivo, "r");
 
     if (file == NULL) {
-        perror("Erro ao abrir o arquivo");
+        perror("Erro ao estado2rir o arquivo");
     }else{
 	
 	 // Le o arquivo e armazena na matriz
@@ -399,7 +399,7 @@ void salva_dat(struct memoria_dados *data){
 
     save_dat = fopen("dados.dat", "w");
 
-    if (save_dat != NULL) { // verifica se os arquivos foram abertos com sucesso.
+    if (save_dat != NULL) { // verifica se os arquivos foram estado2ertos com sucesso.
     
     while(contador < 256) {
         fprintf(save_dat, "%d\n", aux->dados[contador]);
@@ -508,119 +508,119 @@ void printaEstado(struct estado *estado){
 	printf("%s\n", estado->mem_inst.mem_inst[0].inst_char);
 }
 
-void stage1(struct memoria_instrucao inst, int pc, struct instrucao *reg_inst){
+void stage1(struct memoria_instrucao *inst, int pc, struct estado1 *estado1){
 	printf("Estagio 1: Busca da instrucao [BI]\n");
 	printf("PC: %d\n", pc);
-	*reg_inst = inst.mem_inst[pc];
-	printf("Instrucao: %d\n", inst.mem_inst[pc].inst_char); // NÃO ESTÁ TENDO NADA NO INST_CHAR.
-	mostra_asm(reg_inst);
+	estado1->inst = inst->mem_inst[pc];
+	printf("Instrucao: %s\n", estado1->inst.inst_char); // NÃO ESTÁ TENDO NADA NO INST_CHAR.
+	mostra_asm(&estado1->inst);
 	//controle->pc++;
 }
 
-void stage2(struct instrucao *inst,  struct registradores *reg, struct ab *ab){
-	printf("\nTESTE: %s\n", inst->tipo_inst);
-	switch(inst->tipo_inst){
+void stage2(struct estado1 *estado1,  struct registradores *reg, struct estado2 *estado2){
+	printf("\nTESTE: %s\n", estado1->inst.tipo_inst);
+	switch(estado1->inst.tipo_inst){
 		case 'J':
-			ab->reg_a = inst->addr;
+			estado2->reg_a = estado1->inst.addr;
 		break;
 		
 		case 'I':
-			switch(inst->opcode){
+			switch(estado1->inst.opcode){
 				//ADDI
 				case 4:
-					ab->reg_a = reg->dados[inst->rs];
-					ab->reg_b = inst->imm;
-					ab->reg_c = inst->rt;
+					estado2->reg_a = reg->dados[estado1->inst.rs];
+					estado2->reg_b = estado1->inst.imm;
+					estado2->reg_c = estado1->inst.rt;
 				break;
 				//BEQ
 				case 8:
-					ab->reg_a = reg->dados[inst->rs];
-					ab->reg_b = reg->dados[inst->rt];
-					ab->reg_c = inst->imm;
+					estado2->reg_a = reg->dados[estado1->inst.rs];
+					estado2->reg_b = reg->dados[estado1->inst.rt];
+					estado2->reg_c = estado1->inst.imm;
 				break;
 				//LW
 				case 11:
-					ab->reg_a = reg->dados[inst->rs];
-					ab->reg_b = inst->imm;
-					ab->reg_c = inst->rt;
+					estado2->reg_a = reg->dados[estado1->inst.rs];
+					estado2->reg_b = estado1->inst.imm;
+					estado2->reg_c = estado1->inst.rt;
 				break;
 				//SW
 				case 15:
-					ab->reg_a = reg->dados[inst->rs];
-					ab->reg_b = inst->imm;
-					ab->reg_c = inst->rt;
+					estado2->reg_a = reg->dados[estado1->inst.rs];
+					estado2->reg_b = estado1->inst.imm;
+					estado2->reg_c = estado1->inst.rt;
 				break;
 			}
 		break;
 		
 		case 'R':
-			ab->reg_a = reg->dados[inst->rs];
-			ab->reg_b = reg->dados[inst->rt];
-			ab->funct = inst->funct;
-			ab->reg_c = inst->rd;
+			estado2->reg_a = reg->dados[estado1->inst.rs];
+			estado2->reg_b = reg->dados[estado1->inst.rt];
+			estado2->funct = estado1->inst.funct;
+			estado2->reg_c = estado1->inst.rd;
 		break;
 	}
-	ab->opcode = inst->opcode;
-	ab->inst = *inst;
+	estado2->opcode = estado1->inst.opcode;
+	estado2->inst = estado1->inst;
 	printf("\nEstagio 2: \n");
-	printf("Reg a: %d\n", ab->reg_a);
-	printf("Reg b: %d\n", ab->reg_b);
-	printf("Reg c: %d\n", ab->reg_c);
+	printf("Reg a: %d\n", estado2->reg_a);
+	printf("Reg b: %d\n", estado2->reg_b);
+	printf("Reg c: %d\n", estado2->reg_c);
 }
 
-void stage3(struct ab *ab, struct result_ula *rula){
-	switch(ab->opcode){
+void stage3(struct estado2 *estado2, struct result_ula *rula){
+	switch(estado2->opcode){
 		//TIPO R
 		case 0:
-			switch(ab->funct){
+			switch(estado2->funct){
 			//ADD
 			case 0:
-				rula->resultado = ula(&ab->inst,ab->reg_a,ab->reg_b);
-				rula->reg_c = ab->reg_c;
+				rula->resultado = ula(&estado2->inst,estado2->reg_a,estado2->reg_b);
+				rula->reg_c = estado2->reg_c;
 			break;
 			//SUB
 			case 2:
-				rula->resultado =  ula(&ab->inst,ab->reg_a,ab->reg_b);
-				rula->reg_c = ab->reg_c;
+				rula->resultado =  ula(&estado2->inst,estado2->reg_a,estado2->reg_b);
+				rula->reg_c = estado2->reg_c;
 			break;
 			//AND
 			case 4:
-				rula->resultado =	 ula(&ab->inst,ab->reg_a,ab->reg_b);
-				rula->reg_c = ab->reg_c;
+				rula->resultado =	 ula(&estado2->inst,estado2->reg_a,estado2->reg_b);
+				rula->reg_c = estado2->reg_c;
 			break;
 			//OR
 			case 5:
-				rula->resultado =  ula(&ab->inst,ab->reg_a,ab->reg_b);
-				rula->reg_c = ab->reg_c;
+				rula->resultado =  ula(&estado2->inst,estado2->reg_a,estado2->reg_b);
+				rula->reg_c = estado2->reg_c;
 			break;			
 			}
 		break;
 		//Jump
 		case 2:
-			rula->resultado =  ab->reg_a;
+			rula->resultado =  estado2->reg_a;
 		break;
 		//ADDI
 		case 4:
-			rula->resultado =  ula(&ab->inst,ab->reg_a,ab->reg_b);
-			rula->reg_c = ab->reg_c;
+			rula->resultado =  ula(&estado2->inst,estado2->reg_a,estado2->reg_b);
+			rula->reg_c = estado2->reg_c;
 		break;
 		//BEQ
 		case 8:
-			if(ula(&ab->inst,ab->reg_a,ab->reg_b)==0){
-				rula->resultado = ab->reg_c;
+			if(ula(&estado2->inst,estado2->reg_a,estado2->reg_b)==0){
+				rula->resultado = estado2->reg_c;
 			}else{
 				rula->resultado = 1;
 			}
 		break;
 		//LW
 		case 11:
-			rula->resultado =  ula(&ab->inst,ab->reg_a,ab->reg_b);
-			rula->reg_c = ab->reg_c;
+			rula->resultado =  ula(&estado2->inst,estado2->reg_a,estado2->reg_b);
+			rula->reg_c = estado2->reg_c;
 		break;
 		//SW
 		case 15:
-			rula->resultado =  ula(&ab->inst,ab->reg_a,ab->reg_b);
-			rula->reg_c = ab->reg_c;
+			rula->resultado =  ula(&estado2->inst,estado2->reg_a,estado2->reg_b);
+			rula->reg_c = estado2->reg_c;
 		break;
 	}
 	printf("\nEstagio 3:\n");

@@ -28,8 +28,8 @@ int main() {
 	struct controle pc = {0};
 	struct result_ula ula = {0};
 	struct estado novo_estado;
-	struct instrucao reg_inst = {0};
-	struct ab ab = {0};
+	struct estado2 estado2 = {0};
+	struct estado1 estado1 = {0};
 	
 	struct desc_Pilha *minhaPilha = CriaPilha();
 
@@ -84,17 +84,17 @@ int main() {
 
 				switch (flag_estados) {
 				case 1:
-					stage1(mem_inst,pc.pc, &reg_inst);
-					printf("\nTESTE: %s\n", mem_inst.mem_inst[pc.pc].inst_char); // POR ALGUM MOTIVO NÃO TÁ PEGANDO O INST_CHAR.
+					stage1(&mem_inst,pc.pc, &estado1);
+					printf("\nTESTE: %s\n", estado1.inst.inst_char);
 					flag_estados++;
 					break;
 				case 2:
-				//	stage2(&reg_inst, &reg, &ab);
-					stage1(mem_inst,pc.pc+1, &reg_inst);
+					stage2(&estado1, &reg, &estado2);
+					stage1(&mem_inst,pc.pc+1, &estado1);
 					flag_estados++;
 					break;
 				/*case 3: 
-					stage3(&ab, &ula);
+					stage3(&estado2, &ula);
 					stage2
 					stage1(mem_inst,pc.pc+2, &reg_inst);
 					flag_estados++;
