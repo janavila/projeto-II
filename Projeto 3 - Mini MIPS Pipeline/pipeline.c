@@ -413,21 +413,32 @@ void salva_dat(struct memoria_dados *data){
 
 }
 
-void salva_estado(struct estado *estado, struct memoria_instrucao *mem_inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *pc){	
+void salva_estado(struct estado *estado, struct memoria_instrucao *mem_inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *pc, struct estado1 *estado1, struct estado2 *estado2, struct estado3 *estado3, struct estado4 *estado4, int *flag_estados, int *i){	
  	struct nodo *novo = malloc(sizeof(struct nodo));
 	
 	estado->mem_inst = *mem_inst;
  	estado->mem_dados = *mem_dados;
  	estado->reg = *reg;	
     estado->pc = *pc;
-	
+	estado->estado1 = *estado1;
+	estado->estado2 = *estado2;
+	estado->estado3 = *estado3;
+	estado->estado4 = *estado4;
+	estado->flag_estados = *flag_estados;
+	estado->i = *i;
 }
 
-void back(struct desc_Pilha *estado, struct memoria_instrucao *mem_inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *pc){
+void back(struct desc_Pilha *estado, struct memoria_instrucao *mem_inst, struct memoria_dados *mem_dados, struct registradores *reg, struct controle *pc, struct estado1 *estado1, struct estado2 *estado2, struct estado3 *estado3, struct estado4 *estado4, int *flag_estados, int *i){
     *mem_inst = estado->primeiro->info->mem_inst;
     *mem_dados = estado->primeiro->info->mem_dados;
     *reg = estado->primeiro->info->reg;
     *pc = estado->primeiro->info->pc;
+	*estado1 = estado->primeiro->info->estado1;
+	*estado2 = estado->primeiro->info->estado2;
+	*estado3 = estado->primeiro->info->estado3;
+	*estado4 = estado->primeiro->info->estado4;
+	*flag_estados = estado->primeiro->info->flag_estados;
+	*i = estado->primeiro->info->i;
 	printf("Voltando uma instrucao!");
 }
 
@@ -442,7 +453,8 @@ struct desc_Pilha * CriaPilha(){
 
 struct nodo * CriaNodo(struct estado *estados){
 	struct nodo *novoNodo = (struct nodo*)malloc(sizeof(struct nodo));
-	novoNodo->info=estados;
+	novoNodo->info = (struct estado*)malloc(sizeof(struct estado));
+	memcpy(novoNodo->info, estados, sizeof(struct estado));
 	novoNodo->prox=NULL;
 	return novoNodo;
 }
@@ -499,9 +511,7 @@ void printaNodo(struct nodo *nodoAtual){
 
 void printaEstado(struct estado *estado){
 	printf("Teste\n");
-	printf("%d\n", estado->pc.pc);
-	printf("%d\n", estado->reg.dados[0]);
-	printf("%s\n", estado->mem_inst.mem_inst[0].inst_char);
+	printf("%s\n", estado->estado1.inst.inst_char);
 }
 
 void stage1(struct memoria_instrucao *inst, int pc, struct estado1 *estado1){

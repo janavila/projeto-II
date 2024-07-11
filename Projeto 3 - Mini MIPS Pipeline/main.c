@@ -32,6 +32,7 @@ int main() {
 	struct estado3 estado3 = {0};
 	struct estado2 estado2 = {0};
 	struct estado1 estado1 = {0};
+	struct nodo * novoNodo;
 	
 	struct desc_Pilha *minhaPilha = CriaPilha();
 
@@ -78,8 +79,8 @@ int main() {
 				imprime_reg(&reg);
 			break;
             case 8:
-				salva_estado(&novo_estado, &mem_inst, &mem_dados, &reg, &pc);
-				struct nodo * novoNodo = CriaNodo(&novo_estado);
+				salva_estado(&novo_estado, &mem_inst, &mem_dados, &reg, &pc, &estado1, &estado2, &estado3, &estado4, &flag_estados, &i);
+				novoNodo = CriaNodo(&novo_estado);
 				minhaPilha = PUSH(minhaPilha, novoNodo);
 				//Imprime(minhaPilha);
 				// adicionar bolhas para o beq (nops)
@@ -168,7 +169,7 @@ int main() {
 			break;
 			case 9:
 				while(flag_estados<=mem_inst.tamanho+4){
-					salva_estado(&novo_estado, &mem_inst, &mem_dados, &reg, &pc);
+					salva_estado(&novo_estado, &mem_inst, &mem_dados, &reg, &pc, &estado1, &estado2, &estado3, &estado4, &flag_estados, &i);
 				struct nodo * novoNodo = CriaNodo(&novo_estado);
 				minhaPilha = PUSH(minhaPilha, novoNodo);
 				//Imprime(minhaPilha);
@@ -259,8 +260,8 @@ int main() {
 			break;
             case 10: 
 				if (EMPTY(minhaPilha)==1) {
-					Imprime(minhaPilha);
-					back(minhaPilha, &mem_inst, &mem_dados, &reg, &pc);
+					//Imprime(minhaPilha);
+					back(minhaPilha, &mem_inst, &mem_dados, &reg, &pc, &estado1, &estado2, &estado3, &estado4, &flag_estados, &i);
 					minhaPilha = POP(minhaPilha);
 				} else {
 					printf("Lista Vazia\n");
